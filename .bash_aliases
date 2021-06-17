@@ -14,6 +14,10 @@ fi
 alias update="sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y"
 # One line upgrade system
 alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
+# Adding personal aliases
+if [ -f ~/.aliases ]; then
+    . ~/.aliases
+fi
 # Create a new ssh function to setup bash on the remote machine
 # Make sure to leave the function at the end of .bash_aliases
 bssh(){
