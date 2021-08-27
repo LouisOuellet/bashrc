@@ -64,7 +64,7 @@ if [ "$OS" == "Mac" ]; then
 	alias egrep='egrep --color=auto'
 	alias upconnect='git add . && git commit -m '\''UPDATE'\'' && git push origin dev && git checkout beta && git merge dev && git push origin beta && git checkout dev'
 	alias fetchconnect='git pull origin dev && git pull origin beta && git pull origin master'
-	alias fetchjson='scp manager@albcie.com:json/*.json /Users/louis/Projects/ALB-Connect/config/.'
+	alias fetchjson="scp manager@albcie.com:json/*.json ${HOME}/Projects/ALB-Connect/config/."
 
 	# Homebrew Integration
 	eval "$(/opt/homebrew/bin/brew shellenv)"
