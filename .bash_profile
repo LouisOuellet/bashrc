@@ -13,9 +13,10 @@ case "${unameOut}" in
 esac
 
 # Gathering Network
-IP1=$(ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{ print $2 }' | tail -n 1)
-if [ "${IP1}" == '' ];then
-	IP1=$(ip a | grep "inet " | egrep -v "127.0.0.1" | head -n 1 | awk '{ print $2 }')
+if [ "$(whereis ifconfig | awk '{ print $2 }')" != '' ]; then
+  IP1=$(ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{ print $2 }' | tail -n 1)
+else
+  IP1=$(ip a | grep "inet " | egrep -v "127.0.0.1" | head -n 1 | awk '{ print $2 }')
 fi
 
 # COLORS
