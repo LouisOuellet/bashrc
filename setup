@@ -2,13 +2,13 @@
 
 sourceDir=$(dirname $(readlink -f $0))
 
-if[ -x ~/.bashrc ]; then
+if [ -x ~/.bashrc ]; then
   rm ~/.bashrc
 fi
-if[ -x ~/.bash_profile ]; then
+if [ -x ~/.bash_profile ]; then
   rm ~/.bash_profile
 fi
-if[ -x ~/.bash_logout ]; then
+if [ -x ~/.bash_logout ]; then
   rm ~/.bash_logout
 fi
 cp ${sourceDir}/.bashrc ~/.bashrc
