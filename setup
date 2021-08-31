@@ -2,6 +2,6 @@
 
 sourceDir=$(dirname $(readlink -f $0))
 
-cp ${sourceDir}/.bashrc ~/.bashrc
-cp ${sourceDir}/.bash_profile ~/.bash_profile
-cp ${sourceDir}/.bash_logout ~/.bash_logout
+rm ~/.bashrc && cp ${sourceDir}/.bashrc ~/.bashrc
+rm ~/.bash_profile && cp ${sourceDir}/.bash_profile ~/.bash_profile
+rm ~/.bash_logout && cp ${sourceDir}/.bash_logout ~/.bash_logout
