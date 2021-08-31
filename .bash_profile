@@ -1,4 +1,3 @@
-source ~/.profile
 # Adding /sbin to PATH
 export PATH="$PATH:/sbin"
 
@@ -11,7 +10,6 @@ case "${unameOut}" in
     MINGW*)     OS=MinGw;;
     *)          OS="UNKNOWN:${unameOut}"
 esac
-echo "Running ${OS}"
 
 # Gathering Network
 if [ "$(whereis ifconfig | awk '{ print $1 }')" == '/sbin/ifconfig' ]; then
@@ -89,14 +87,3 @@ else
     alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
   fi
 fi
-
-# Create a new ssh function to setup bash on the remote machine
-# Make sure to leave the function at the end of .bash_aliases
-# ssh(){
-# 	rc=$(cat ${HOME}/.bashrc | base64)
-# 	profile=$(cat ${HOME}/.bash_profile | head -n 8 | base64)
-# 	/usr/bin/ssh -Xt $@ "echo \"${rc}${profile}\" | base64 --decode > /tmp/${USER}_bashrc; bash --rcfile /tmp/${USER}_bashrc; rm /tmp/${USER}_bashrc;"
-# }
-# tssh(){
-# 	/usr/bin/ssh -Xt $@ 'tcsh;'
-# }

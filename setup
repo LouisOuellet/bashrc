@@ -1,0 +1,7 @@
+#!/bin/bash
+
+sourceDir=$(dirname $(readlink -f $0))
+
+cp ${sourceDir}/.bashrc ~/.bashrc
+cp ${sourceDir}/.bash_profile ~/.bash_profile
+cp ${sourceDir}/.bash_logout ~/.bash_logout
