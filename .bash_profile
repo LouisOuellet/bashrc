@@ -11,6 +11,7 @@ case "${unameOut}" in
     MINGW*)     OS=MinGw;;
     *)          OS="UNKNOWN:${unameOut}"
 esac
+echo "Running ${OS}"
 
 # Gathering Network
 if [ "$(whereis ifconfig | awk '{ print $1 }')" == '/sbin/ifconfig' ]; then
