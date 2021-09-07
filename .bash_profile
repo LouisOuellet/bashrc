@@ -1,3 +1,6 @@
+if [ -x ~/.profile ]; then
+  source ~/.profile
+fi
 # Adding /sbin to PATH
 export PATH="$PATH:/sbin"
 
@@ -71,6 +74,11 @@ if [ "$OS" == "Mac" ]; then
 
 	# iTerm2 Integration
 	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+  # Export PATH
+  export PATH=/Applications/MAMP/Library/bin/:$PATH
+  export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
+
 else
   if [ -x /usr/bin/dircolors ]; then
     alias ls="ls -lh --color"
