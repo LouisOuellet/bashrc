@@ -75,9 +75,11 @@ if [ "$OS" == "Mac" ]; then
 	# iTerm2 Integration
 	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
-  # Export PATH
-  export PATH=/Applications/MAMP/Library/bin/:$PATH
-  export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
+  if [ -d /Applications/MAMP ]; then
+    # Export PATH for MAMP
+    export PATH=/Applications/MAMP/Library/bin/:$PATH
+    export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
+  fi
 
 else
   if [ -x /usr/bin/dircolors ]; then

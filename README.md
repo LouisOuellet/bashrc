@@ -27,6 +27,9 @@ alias fetchmaster='git pull origin master'
 eval "$(/opt/homebrew/bin/brew shellenv)"
 # iTerm2 Integration
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+# Export PATH for MAMP
+export PATH=/Applications/MAMP/Library/bin/:$PATH
+export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
 ```
 
 ## Aliases for Debian base Distributions
