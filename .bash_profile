@@ -77,7 +77,9 @@ if [ "$OS" == "Mac" ]; then
               rsync -vha --exclude=sources/install.wim /Volumes/CCCOMA_X64FRE_EN-US_DV9/* /Volumes/WIN10
               mkdir -p /Volumes/WIN10/sources
               wimlib-imagex split /Volumes/CCCOMA_X64FRE_EN-US_DV9/sources/install.wim /Volumes/WIN10/sources/install.swm 3800
+              diskutil unmount /dev/${1}
               diskutil eject /dev/${1}
+              diskutil unmount /Volumes/CCCOMA_X64FRE_EN-US_DV9
               echo "${2} has been written on ${1}. You can now disconnect ${1} and start your installation."
             else
               echo "Unable to find ${2}."
