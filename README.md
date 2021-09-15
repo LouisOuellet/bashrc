@@ -20,8 +20,9 @@ alias upmaster='git add . && git commit -m '\''UPDATE'\'' && git push origin mas
 alias fetchmaster='git pull origin master'
 ```
 
-## Extra Settings for macOS
+## Extra for macOS
 
+### Settings
 ```bash
 # Homebrew Integration
 eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -30,6 +31,15 @@ test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shel
 # Export PATH for MAMP
 export PATH=/Applications/MAMP/Library/bin/:$PATH
 export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
+```
+
+### Functions
+#### burnWin10ISO
+This funtion provides an easy way to burn a Windows 10 ISO onto a USB. It also does several checks to avoid potential harm to your computer.
+
+##### Usage
+```bash
+burnWin10ISO disk iso.file
 ```
 
 ## Aliases for Debian base Distributions
