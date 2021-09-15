@@ -1,6 +1,3 @@
-if [ -x ~/.profile ]; then
-  source ~/.profile
-fi
 # Adding /sbin to PATH
 export PATH="$PATH:/sbin"
 
@@ -65,8 +62,6 @@ if [ "$OS" == "Mac" ]; then
 	alias grep='grep --color=auto'
 	alias fgrep='fgrep --color=auto'
 	alias egrep='egrep --color=auto'
-	alias upconnect='git add . && git commit -m '\''UPDATE'\'' && git push origin dev && git checkout beta && git merge dev && git push origin beta && git checkout dev'
-	alias fetchconnect='git pull origin dev && git pull origin beta && git pull origin master'
   function burnWin10ISO {
     if [[ $(brew list wimlib) == *"Error"* ]]; then
       brew install wimlib
@@ -130,4 +125,10 @@ else
     # One line upgrade system
     alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
   fi
+fi
+if [ -x ~/.profile ]; then
+  source ~/.profile
+fi
+if [ -x ~/.bash_aliases ]; then
+  source ~/.bash_aliases
 fi
