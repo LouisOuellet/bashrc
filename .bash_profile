@@ -71,31 +71,35 @@ if [ "$OS" == "Mac" ]; then
     if [[ $(brew list wimlib) == *"Error"* ]]; then
       brew install wimlib
     fi
-    if [[ $1 == "disk"* ]]; then
-      INFO=$(diskutil info $1 | grep "Protocol:" | awk '{ print $2 }')
-      if [[ $INFO == *"USB"* ]]; then
-        if [[ $2 == *".iso" ]]; then
-          if [ -f "${2}" ]; then
-            diskutil eraseDisk MS-DOS 'WIN10' GPT /dev/${1}
-            hdiutil mount ${2}
-            rsync -vha --exclude=sources/install.wim /Volumes/CCCOMA_X64FRE_EN-US_DV9/* /Volumes/WIN10
-            mkdir -p /Volumes/WIN10/sources
-            wimlib-imagex split /Volumes/CCCOMA_X64FRE_EN-US_DV9/sources/install.wim /Volumes/WIN10/sources/install.swm 3800
-            diskutil eject /dev/${1}
-            echo "${2} has been written on ${1}. You can now disconnect ${1} and start your installation."
+    if [[ $1 != "" ]]; then
+      if [[ $1 == "disk"* ]]; then
+        INFO=$(diskutil info $1 | grep "Protocol:" | awk '{ print $2 }')
+        if [[ $INFO == *"USB"* ]]; then
+          if [[ $2 == *".iso" ]]; then
+            if [ -f "${2}" ]; then
+              diskutil eraseDisk MS-DOS 'WIN10' GPT /dev/${1}
+              hdiutil mount ${2}
+              rsync -vha --exclude=sources/install.wim /Volumes/CCCOMA_X64FRE_EN-US_DV9/* /Volumes/WIN10
+              mkdir -p /Volumes/WIN10/sources
+              wimlib-imagex split /Volumes/CCCOMA_X64FRE_EN-US_DV9/sources/install.wim /Volumes/WIN10/sources/install.swm 3800
+              diskutil eject /dev/${1}
+              echo "${2} has been written on ${1}. You can now disconnect ${1} and start your installation."
+            else
+              echo "Unable to find ${2}."
+            fi
           else
-            echo "Unable to find ${2}."
+            echo "${2} is not an ISO file or you did not specify an ISO file."
           fi
         else
-          echo "${2} is not an ISO file or you did not specify an ISO file."
+          echo "${1} is not available on this computer or is not a USB Drive. Here's the list:"
+          diskutil list
         fi
       else
-        echo "${1} is not available on this computer or is not a USB Drive. Here's the list:"
+        echo "${1} is not a disk or you did not specify a disk. Here's the list:"
         diskutil list
       fi
     else
-      echo "${1} is not a disk or you did not specify a disk. Here's the list:"
-      diskutil list
+      echo "burnWin10ISO [disk] [iso file]"
     fi
   }
 
