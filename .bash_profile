@@ -63,18 +63,26 @@ export EDITOR=/usr/bin/nano
 if [ "$OS" == "Mac" ]; then
 	export EDITOR=nano
 	export VISUAL="$EDITOR"
+
+  # Adding homebrew
+  export PATH=/opt/homebrew/bin/:$PATH
+
+  # Silence Terminal
+  export BASH_SILENCE_DEPRECATION_WARNING=1
 	alias ls="ls -lhG"
 	alias grep='grep --color=auto'
 	alias fgrep='fgrep --color=auto'
 	alias egrep='egrep --color=auto'
-  if [[ $(brew list bash) == *"Error"* ]]; then
-    brew install bash
-  fi
-  if [[ $(brew list bash-completion) == *"Error"* ]]; then
-    brew install bash-completion
-  fi
-  if [[ $(brew list git) == *"Error"* ]]; then
-    brew install git
+  if [ ! -f /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash ]; then
+    if [[ $(brew list --version bash) == "" ]]; then
+      brew install bash
+    fi
+    if [[ $(brew list --version bash-completion) == "" ]]; then
+      brew install bash-completion
+    fi
+    if [[ $(brew list --version git) == "" ]]; then
+      brew install git
+    fi
   fi
   if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash ]; then
     source /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash
@@ -83,7 +91,7 @@ if [ "$OS" == "Mac" ]; then
     source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
   fi
   function burnWin10ISO {
-    if [[ $(brew list wimlib) == *"Error"* ]]; then
+    if [[ $(brew list --version wimlib) == "" ]]; then
       brew install wimlib
     fi
     if [[ $1 != "" ]]; then
@@ -126,13 +134,18 @@ if [ "$OS" == "Mac" ]; then
 	# iTerm2 Integration
 	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
-  # Silence Terminal
-  export BASH_SILENCE_DEPRECATION_WARNING=1
-
   if [ -d /Applications/MAMP ]; then
     # Export PATH for MAMP
     export PATH=/Applications/MAMP/Library/bin/:$PATH
     export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
+    alias php='/Applications/MAMP/bin/php/php7.4.16/bin/php -c "/Library/Application Support/appsolute/MAMP PRO/conf/php7.4.16.ini"'
+    alias composer='/Applications/MAMP/bin/php/composer'
+    alias php-config='/Applications/MAMP/bin/php/php7.4.16/bin/php-config'
+    alias phpdbg='/Applications/MAMP/bin/php/php7.4.16/bin/phpdbg'
+    alias phpize='/Applications/MAMP/bin/php/php7.4.16/bin/phpize'
+    alias pear='/Applications/MAMP/bin/php/php7.4.16/bin/pear'
+    alias peardev='/Applications/MAMP/bin/php/php7.4.16/bin/peardev'
+    alias pecl='/Applications/MAMP/bin/php/php7.4.16/bin/pecl'
   fi
 
 else
