@@ -27,6 +27,14 @@ blueText=$(tput setaf 4)    # Blue
 magentaText=$(tput setaf 5) # Magenta
 cyanText=$(tput setaf 6)    # Cyan
 whiteText=$(tput setaf 7)   # White
+greyText=$(tput setaf 8)   # Grey
+lightredText=$(tput setaf 9)   # Light Red
+lightgreenText=$(tput setaf 10)   # Light Green
+lightyellowText=$(tput setaf 11)   # Light Yellow
+lightblueText=$(tput setaf 12)   # Light Blue
+lightmagentaText=$(tput setaf 13)   # Light Magenta
+lightcyanText=$(tput setaf 14)   # Light Cyan
+lightgreyText=$(tput setaf 15)   # Light Grey
 resetText=$(tput sgr0)      # Reset to default color
 
 # STYLES
@@ -157,16 +165,16 @@ fi
 # - = \342\224\200
 # └ = \342\224\224
 # ╼ = \342\225\274
-#PS1="\[\033[0;39m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]root\[\033[01;33m\]@\[\033[01;96m\]\h'; else echo '\[\033[01;94m\]\u\[\033[01;92m\]@\[\033[01;94m\]\h'; fi)\[\033[0;39m\]]\342\224\200[\[\033[01;31m\]${IP1}\033[0;39m\]]\342\224\200[\[\033[01;36m\]\w\[\033[0;39m\]]\n\[\033[0;39m\]\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]\[\e[01;39m\]\\$\[\e[0m\] "
+# PS1="\[\033[0;39m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]root\[\033[01;33m\]@\[\033[01;96m\]\h'; else echo '\[\033[01;94m\]\u\[\033[01;92m\]@\[\033[01;94m\]\h'; fi)\[\033[0;39m\]]\342\224\200[\[\033[01;31m\]${IP1}\033[0;39m\]]\342\224\200[\[\033[01;36m\]\w\[\033[0;39m\]]\n\[\033[0;39m\]\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]\[\e[01;39m\]\\$\[\e[0m\] "
 
 if [[ ${EUID} == 0 ]]; then
-  pUSER="[${redText}\u${yellowText}@${redText}\h${resetText}]"
+  pUSER="[${lightredText}\u${lightyellowText}@${lightredText}\h${resetText}]"
 else
-  pUSER="[${blueText}\u${greenText}@${blueText}\h${resetText}]"
+  pUSER="[${lightblueText}\u${lightgreenText}@${lightblueText}\h${resetText}]"
 fi
 pIP="[${redText}${IP1}${resetText}]"
-pCWD="[${cyanText}\w${resetText}]"
-pGIT='$(__git_ps1 "\342\224\200[${greenText}%s${resetText}]")'
+pCWD="[${lightcyanText}\w${resetText}]"
+pGIT='$(__git_ps1 "\342\224\200[${lightgreenText}%s${resetText}]")'
 PS1="\342\224\214\342\224\200${pUSER}\342\224\200${pIP}\342\224\200${pCWD}${pGIT}"
 PS1="${PS1}\n\342\224\224\342\224\200\342\224\200\342\225\274 $ "
 
