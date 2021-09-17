@@ -34,12 +34,6 @@ boldText=$(tput bold)
 blinkingText=$(tput blink)
 dimText=$(tput dim)
 
-# Editing prompt
-# ]\342\224\200[ => ]-[
-PS1="\[\033[0;39m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]root\[\033[01;33m\]@\[\033[01;96m\]\h'; else echo '\[\033[01;94m\]\u\[\033[01;92m\]@\[\033[01;94m\]\h'; fi)\[\033[0;39m\]]\342\224\200[\[\033[01;31m\]${IP1}\033[0;39m\]]\342\224\200[\[\033[01;36m\]\w\[\033[0;39m\]]\n\[\033[0;39m\]\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]\[\e[01;39m\]\\$\[\e[0m\] "
-#PS1="\[\033[0;39m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")["
-#PS1="$(if [[ ${EUID} == 0 ]]; then echo '\[${redText}root\[${yellowText}@\[${redText}\h'; else echo '\[${blueText}\u\[${greenText}@\[${blueText}\h'; fi)\[${resetText}]\342\224\200[${redText}${IP1}${resetText}]\342\224\200[${yellowText}${OS}${resetText}]\342\224\200[\[${cyanText}\w\[${resetText}]\n\[${resetText}\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]\[\e[01;39m\]\\$\[\e[0m\] "
-
 # Make ls Readable
 alias ls="ls -lh"
 
@@ -54,6 +48,9 @@ if [ -x /usr/bin/dircolors ]; then
   test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
 fi
 
+# Configure Editor
+export EDITOR=/usr/bin/nano
+
 # Handling OSes
 if [ "$OS" == "Mac" ]; then
 	export EDITOR=nano
@@ -62,6 +59,21 @@ if [ "$OS" == "Mac" ]; then
 	alias grep='grep --color=auto'
 	alias fgrep='fgrep --color=auto'
 	alias egrep='egrep --color=auto'
+  if [[ $(brew list bash) == *"Error"* ]]; then
+    brew install bash
+  fi
+  if [[ $(brew list bash-completion) == *"Error"* ]]; then
+    brew install bash-completion
+  fi
+  if [[ $(brew list git) == *"Error"* ]]; then
+    brew install git
+  fi
+  if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash ]; then
+    source /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash
+  fi
+  if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh ]; then
+    source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
+  fi
   function burnWin10ISO {
     if [[ $(brew list wimlib) == *"Error"* ]]; then
       brew install wimlib
@@ -106,6 +118,9 @@ if [ "$OS" == "Mac" ]; then
 	# iTerm2 Integration
 	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
+  # Silence Terminal
+  export BASH_SILENCE_DEPRECATION_WARNING=1
+
   if [ -d /Applications/MAMP ]; then
     # Export PATH for MAMP
     export PATH=/Applications/MAMP/Library/bin/:$PATH
@@ -128,9 +143,35 @@ else
     alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
   fi
 fi
+
+# Loading custom settings
 if [ -x ~/.profile ]; then
   source ~/.profile
 fi
 if [ -x ~/.bash_aliases ]; then
   source ~/.bash_aliases
 fi
+
+# Editing prompt
+# ┌ = \342\224\214
+# - = \342\224\200
+# └ = \342\224\224
+# ╼ = \342\225\274
+#PS1="\[\033[0;39m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]root\[\033[01;33m\]@\[\033[01;96m\]\h'; else echo '\[\033[01;94m\]\u\[\033[01;92m\]@\[\033[01;94m\]\h'; fi)\[\033[0;39m\]]\342\224\200[\[\033[01;31m\]${IP1}\033[0;39m\]]\342\224\200[\[\033[01;36m\]\w\[\033[0;39m\]]\n\[\033[0;39m\]\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]\[\e[01;39m\]\\$\[\e[0m\] "
+
+if [[ ${EUID} == 0 ]]; then
+  pUSER="[${redText}\u${yellowText}@${redText}\h${resetText}]"
+else
+  pUSER="[${blueText}\u${greenText}@${blueText}\h${resetText}]"
+fi
+pIP="[${redText}${IP1}${resetText}]"
+pCWD="[${cyanText}\w${resetText}]"
+pGIT='$(__git_ps1 "\342\224\200[${greenText}%s${resetText}]")'
+PS1="\342\224\214\342\224\200${pUSER}\342\224\200${pIP}\342\224\200${pCWD}${pGIT}"
+PS1="${PS1}\n\342\224\224\342\224\200\342\224\200\342\225\274 $ "
+
+# Greetings
+clear
+echo
+echo -ne "Good Morning, $USER! It's "; date '+%A, %B %-d %Y'
+echo
