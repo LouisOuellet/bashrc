@@ -194,7 +194,9 @@ PS1="\342\224\214\342\224\200${pUSER}\342\224\200${pIP}\342\224\200${pCWD}${pGIT
 PS1="${PS1}\n\342\224\224\342\224\200\342\224\200\342\225\274 $ "
 
 # Greetings
-clear
-echo
-echo -ne "Good Morning, $USER! It's "; date '+%A, %B %-d %Y'
-echo
+if [[ $- == *i* ]]; then
+  clear
+  echo
+  echo -ne "Good Morning, $USER! It's "; date '+%A, %B %-d %Y'
+  echo
+fi
