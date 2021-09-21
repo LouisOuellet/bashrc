@@ -181,7 +181,7 @@ fi
 # PS1="\[\033[0;39m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]root\[\033[01;33m\]@\[\033[01;96m\]\h'; else echo '\[\033[01;94m\]\u\[\033[01;92m\]@\[\033[01;94m\]\h'; fi)\[\033[0;39m\]]\342\224\200[\[\033[01;31m\]${IP1}\033[0;39m\]]\342\224\200[\[\033[01;36m\]\w\[\033[0;39m\]]\n\[\033[0;39m\]\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]\[\e[01;39m\]\\$\[\e[0m\] "
 
 if [[ ${EUID} == 0 ]]; then
-  pUSER="[${lightredText}\u${lightyellowText}@${lightredText}\h${resetText}]"
+  pUSER="[${lightredText}\u${lightyellowText}@${lightblueText}\h${resetText}]"
 else
   pUSER="[${lightblueText}\u${lightgreenText}@${lightblueText}\h${resetText}]"
 fi
