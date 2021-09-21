@@ -18,29 +18,31 @@ else
   IP1=$(ip a | grep "inet " | egrep -v "127.0.0.1" | head -n 1 | awk '{ print $2 }')
 fi
 
-# COLORS
-blackText=$(tput setaf 0)   # Black
-redText=$(tput setaf 1)     # Red
-greenText=$(tput setaf 2)   # Green
-yellowText=$(tput setaf 3)  # Yellow
-blueText=$(tput setaf 4)    # Blue
-magentaText=$(tput setaf 5) # Magenta
-cyanText=$(tput setaf 6)    # Cyan
-whiteText=$(tput setaf 7)   # White
-greyText=$(tput setaf 8)   # Grey
-lightredText=$(tput setaf 9)   # Light Red
-lightgreenText=$(tput setaf 10)   # Light Green
-lightyellowText=$(tput setaf 11)   # Light Yellow
-lightblueText=$(tput setaf 12)   # Light Blue
-lightmagentaText=$(tput setaf 13)   # Light Magenta
-lightcyanText=$(tput setaf 14)   # Light Cyan
-lightgreyText=$(tput setaf 15)   # Light Grey
-resetText=$(tput sgr0)      # Reset to default color
+if [[ $- == *i* ]]; then
+  # COLORS
+  blackText=$(tput setaf 0)           # Black
+  redText=$(tput setaf 1)             # Red
+  greenText=$(tput setaf 2)           # Green
+  yellowText=$(tput setaf 3)          # Yellow
+  blueText=$(tput setaf 4)            # Blue
+  magentaText=$(tput setaf 5)         # Magenta
+  cyanText=$(tput setaf 6)            # Cyan
+  whiteText=$(tput setaf 7)           # White
+  greyText=$(tput setaf 8)            # Grey
+  lightredText=$(tput setaf 9)        # Light Red
+  lightgreenText=$(tput setaf 10)     # Light Green
+  lightyellowText=$(tput setaf 11)    # Light Yellow
+  lightblueText=$(tput setaf 12)      # Light Blue
+  lightmagentaText=$(tput setaf 13)   # Light Magenta
+  lightcyanText=$(tput setaf 14)      # Light Cyan
+  lightgreyText=$(tput setaf 15)      # Light Grey
+  resetText=$(tput sgr0)              # Reset to default color
 
-# STYLES
-boldText=$(tput bold)
-blinkingText=$(tput blink)
-dimText=$(tput dim)
+  # STYLES
+  boldText=$(tput bold)
+  blinkingText=$(tput blink)
+  dimText=$(tput dim)
+fi
 
 # Make ls Readable
 alias ls="ls -lh"
