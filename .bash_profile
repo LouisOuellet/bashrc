@@ -195,8 +195,10 @@ PS1="${PS1}\n\342\224\224\342\224\200\342\224\200\342\225\274 $ "
 
 # Greetings
 if [[ $- == *i* ]]; then
-  # clear
   echo
   echo -ne "Good Morning, $USER! It's "; date '+%A, %B %-d %Y'
+  echo
+  # French Love Citation of the day
+  echo $(curl -s https://www.mon-poeme.fr/citation-amour-du-jour/ | grep '<div class="post">' | sed -e '2q;d' | sed -e 's/<[^>]*>//g')
   echo
 fi
