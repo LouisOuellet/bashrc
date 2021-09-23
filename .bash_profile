@@ -136,6 +136,9 @@ if [ "$OS" == "Mac" ]; then
 	# iTerm2 Integration
 	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
+  # Enable quote of the day
+  QUOTE="true";
+
   if [ -d /Applications/MAMP ]; then
     # Export PATH for MAMP
     export PATH=/Applications/MAMP/Library/bin/:$PATH
@@ -198,7 +201,9 @@ if [[ $- == *i* ]]; then
   echo
   echo -ne "Good Morning, $USER! It's "; date '+%A, %B %-d %Y'
   echo
-  # French Love Citation of the day
-  echo $(curl -s https://www.mon-poeme.fr/citation-amour-du-jour/ | grep '<div class="post">' | sed -e '2q;d' | sed -e 's/<[^>]*>//g')
-  echo
+  if [ "${QUOTE}" == "true" ]; then
+    # French Love Citation of the day
+    echo $(curl -s https://www.mon-poeme.fr/citation-amour-du-jour/ | grep '<div class="post">' | sed -e '2q;d' | sed -e 's/<[^>]*>//g')
+    echo
+  fi
 fi
