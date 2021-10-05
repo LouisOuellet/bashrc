@@ -47,12 +47,6 @@ fi
 # Make ls Readable
 alias ls="ls -lh"
 
-# Adding common ALIASES
-alias upmain='git add . && git commit -m '\''UPDATE'\'' && git push origin main'
-alias fetchmain='git pull origin main'
-alias upmaster='git add . && git commit -m '\''UPDATE'\'' && git push origin master'
-alias fetchmaster='git pull origin master'
-
 # Enable color support
 if [ -x /usr/bin/dircolors ]; then
   test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
@@ -92,6 +86,19 @@ if [ "$OS" == "Mac" ]; then
   if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh ]; then
     source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
   fi
+  function compileAppMaker {
+    directory=$(pwd)
+    for plugin in ~/Projects/*; do
+      if [[ $plugin == *"appmaker-"* ]]; then
+        if [[ $plugin != *"appmaker-plugins" ]]; then
+          cp ~/Projects/appmaker-plugins/compile.php $plugin"/compile.php"
+        fi
+        cd $plugin
+        php compile.php
+      fi
+    done
+    cd $directory
+  }
   function burnWin10ISO {
     if [[ $(brew list --version wimlib) == "" ]]; then
       brew install wimlib
@@ -135,6 +142,16 @@ if [ "$OS" == "Mac" ]; then
 
 	# iTerm2 Integration
 	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+  # Adding common ALIASES
+  alias upmain='git add . && git commit -m '\''UPDATE'\'' && git push origin main'
+  alias fetchmain='git pull origin main'
+  alias upmaster='git add . && git commit -m '\''UPDATE'\'' && git push origin master'
+  alias fetchmaster='git pull origin master'
+  alias upbeta='git add . && git commit -m '\''UPDATE'\'' && git push origin beta'
+  alias fetchbeta='git pull origin beta'
+  alias updev='git add . && git commit -m '\''UPDATE'\'' && git push origin dev'
+  alias fetchdev='git pull origin dev'
 
   # Enable quote of the day
   QUOTE="true";
