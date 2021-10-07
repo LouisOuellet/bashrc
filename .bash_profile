@@ -220,7 +220,7 @@ if [[ $- == *i* ]]; then
   echo
   if [ "${QUOTE}" == "true" ]; then
     # French Love Citation of the day
-    echo $(curl -s https://www.mon-poeme.fr/citation-amour-du-jour/ | grep '<div class="post">' | sed -e '2q;d' | sed -e 's/<[^>]*>//g')
+    echo $(curl -s https://www.mon-poeme.fr/citation-amour-du-jour/ | grep '<div class="post">' | sed -e '1q;d' | sed -e 's/<[^>]*>//g')
     echo
   fi
 fi
