@@ -86,19 +86,69 @@ if [ "$OS" == "Mac" ]; then
   if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh ]; then
     source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
   fi
+
   function compileAppMaker {
     directory=$(pwd)
     for plugin in ~/Projects/*; do
       if [[ $plugin == *"appmaker-"* ]]; then
-        if [[ $plugin != *"appmaker-plugins" ]]; then
-          cp ~/Projects/appmaker-plugins/compile.php $plugin"/compile.php"
+        if [[ $plugin != *"appmaker-plugins"* ]]; then
+          if [[ -f ~/Projects/appmaker-plugins/compile.php ]]; then
+            cp ~/Projects/appmaker-plugins/compile.php "${plugin}/compile.php"
+            if [[ -f ~/Projects/appmaker-plugins/settings.json ]]; then
+              cp ~/Projects/appmaker-plugins/settings.json "${plugin}/settings.json"
+            fi
+          fi
         fi
         cd $plugin
-        php compile.php
+        if [[ "$(git status | grep Changes)" != '' ]]; then
+          echo ""
+          echo "==============================================="
+          echo $plugin
+          echo "==============================================="
+          php compile.php
+        fi
       fi
     done
     cd $directory
   }
+
+  function publishAppMaker {
+    if [[ $1 != "" ]]; then
+      branch=$1
+    else
+      branch=pre-release
+    fi
+    directory=$(pwd)
+    for plugin in ~/Projects/*; do
+      if [[ $plugin == *"appmaker-"* ]]; then
+        cd $plugin
+        echo ""
+        echo "==============================================="
+        echo $plugin
+        echo "==============================================="
+        current=$(git rev-parse --abbrev-ref HEAD)
+        php compile.php
+        git checkout -b ${branch}
+        git checkout ${branch}
+        git merge ${current}
+        php compile.php
+        git checkout ${current}
+        git merge ${branch}
+        php compile.php
+      fi
+    done
+    cd ~/Projects/appmaker
+    php cli.php --publish
+    git checkout -b ${branch}
+    git checkout ${branch}
+    git merge ${current}
+    php cli.php --publish
+    git checkout ${current}
+    git merge ${branch}
+    php cli.php --publish
+    cd $directory
+  }
+
   function burnWin10ISO {
     if [[ $(brew list --version wimlib) == "" ]]; then
       brew install wimlib
