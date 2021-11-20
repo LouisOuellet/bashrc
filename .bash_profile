@@ -100,7 +100,7 @@ if [ "$OS" == "Mac" ]; then
           fi
         fi
         cd $plugin
-        if [[ "$(git status | grep Changes)" != '' ]]; then
+        if [[ "$(git status | grep Changes)$(git status | grep Untracked)" != '' ]]; then
           echo ""
           echo "==============================================="
           echo $plugin
