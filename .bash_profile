@@ -89,13 +89,13 @@ if [ "$OS" == "Mac" ]; then
 
   function compileAppMaker {
     directory=$(pwd)
-    for plugin in ~/Projects/*; do
+    for plugin in /Volumes/Projects/*; do
       if [[ $plugin == *"appmaker-"* ]]; then
         if [[ $plugin != *"appmaker-plugins"* ]]; then
-          if [[ -f ~/Projects/appmaker-plugins/compile.php ]]; then
-            cp ~/Projects/appmaker-plugins/compile.php "${plugin}/compile.php"
-            if [[ -f ~/Projects/appmaker-plugins/settings.json ]]; then
-              cp ~/Projects/appmaker-plugins/settings.json "${plugin}/settings.json"
+          if [[ -f /Volumes/Projects/appmaker-plugins/compile.php ]]; then
+            cp /Volumes/Projects/appmaker-plugins/compile.php "${plugin}/compile.php"
+            if [[ -f /Volumes/Projects/appmaker-plugins/settings.json ]]; then
+              cp /Volumes/Projects/appmaker-plugins/settings.json "${plugin}/settings.json"
             fi
           fi
         fi
@@ -119,7 +119,7 @@ if [ "$OS" == "Mac" ]; then
       branch=pre-release
     fi
     directory=$(pwd)
-    for plugin in ~/Projects/*; do
+    for plugin in /Volumes/Projects/*; do
       if [[ $plugin == *"appmaker-"* ]]; then
         cd $plugin
         echo ""
@@ -137,7 +137,7 @@ if [ "$OS" == "Mac" ]; then
         php compile.php
       fi
     done
-    cd ~/Projects/appmaker
+    cd /Volumes/Projects/appmaker
     php cli.php --publish
     git checkout -b ${branch}
     git checkout ${branch}
@@ -202,6 +202,7 @@ if [ "$OS" == "Mac" ]; then
   alias fetchbeta='git pull origin beta'
   alias updev='git add . && git commit -m '\''UPDATE'\'' && git push origin dev'
   alias fetchdev='git pull origin dev'
+  alias projects='cd /Volumes/Projects'
 
   # Enable quote of the day
   QUOTE="true";
@@ -250,7 +251,6 @@ fi
 # - = \342\224\200
 # └ = \342\224\224
 # ╼ = \342\225\274
-# PS1="\[\033[0;39m\]\342\224\214\342\224\200\$([[ \$? != 0 ]] && echo \"[\[\033[0;31m\]\342\234\227\[\033[0;37m\]]\342\224\200\")[$(if [[ ${EUID} == 0 ]]; then echo '\[\033[01;31m\]root\[\033[01;33m\]@\[\033[01;96m\]\h'; else echo '\[\033[01;94m\]\u\[\033[01;92m\]@\[\033[01;94m\]\h'; fi)\[\033[0;39m\]]\342\224\200[\[\033[01;31m\]${IP1}\033[0;39m\]]\342\224\200[\[\033[01;36m\]\w\[\033[0;39m\]]\n\[\033[0;39m\]\342\224\224\342\224\200\342\224\200\342\225\274 \[\033[0m\]\[\e[01;39m\]\\$\[\e[0m\] "
 
 if [[ ${EUID} == 0 ]]; then
   pUSER="[${lightredText}\u${lightyellowText}@${lightblueText}\h${resetText}]"

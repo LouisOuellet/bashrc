@@ -1,6 +1,20 @@
 #!/bin/bash
 
-sourceDir=$(dirname $(readlink -f $0))
+# Identify OS
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     OS=Linux;;
+    Darwin*)    OS=Mac;;
+    CYGWIN*)    OS=Cygwin;;
+    MINGW*)     OS=MinGw;;
+    *)          OS="UNKNOWN:${unameOut}"
+esac
+
+if [[ "$OS" != "Mac" ]]; then
+  sourceDir=$(dirname $(readlink -f $0))
+else
+  sourceDir=$(dirname $(greadlink -f $0))
+fi
 
 if [ -x ~/.bashrc ]; then
   rm ~/.bashrc
@@ -11,6 +25,7 @@ fi
 if [ -x ~/.bash_logout ]; then
   rm ~/.bash_logout
 fi
+
 cp ${sourceDir}/.bashrc ~/.bashrc
 cp ${sourceDir}/.bash_profile ~/.bash_profile
 cp ${sourceDir}/.bash_logout ~/.bash_logout
