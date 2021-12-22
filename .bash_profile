@@ -87,8 +87,34 @@ if [ "$OS" == "Mac" ]; then
     source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
   fi
 
+  function restoreDMG {
+    if [[ $1 != "" ]] || [[ $1 == *"dmg"* ]]; then
+      dmg=$1
+      if [[ $2 == "" ]] || [[ $2 != *"disk"* ]]; then
+        for disk in $(diskutil list | grep disk | egrep -v '\(' | grep 0: | awk '{ print $NF }');do
+          if [[ $(diskutil info /dev/$disk | grep 'Protocol' | awk '{ print $NF}') == "USB" ]] && [[ $(diskutil info /dev/$disk | grep 'APFS Physical Store') == "" ]]; then
+            diskutil list $disk
+          fi
+        done
+        echo "Wich disk do you want to use?"
+        read disk
+      else
+        disk=$2
+      fi
+      echo "Restoring $dmg into /dev/$disk"
+      for partition in $(diskutil list $disk | grep $disk | egrep -v '0:' | egrep -v '/dev/' | awk '{ print $NF }');do
+        echo "Unmounting $partition"
+        diskutil unmount $partition
+      done
+      pv -tpreb $dmg | sudo dd of=/dev/$disk
+    else
+      echo "Please specify a dmg file"
+    fi
+  }
+
   function compileAppMaker {
     directory=$(pwd)
+    plugins=
     for plugin in /Volumes/Projects/*; do
       if [[ $plugin == *"appmaker-"* ]]; then
         if [[ $plugin != *"appmaker-plugins"* ]]; then
@@ -105,9 +131,20 @@ if [ "$OS" == "Mac" ]; then
           echo "==============================================="
           echo $plugin
           echo "==============================================="
+          plugin=$(echo $plugin | sed -e 's/\/Volumes\/Projects\/appmaker-//g')
+          if [[ $plugins == "" ]]; then
+            plugins=${plugin}
+          else
+            plugins="${plugins} ${plugin}"
+          fi
           php compile.php
         fi
       fi
+    done
+    cd /Volumes/Projects/appmaker
+    for plugin in $plugins;do
+      json='{"plugin":"'$plugin'"}'
+      php cli.php --update "$json"
     done
     cd $directory
   }
@@ -205,7 +242,7 @@ if [ "$OS" == "Mac" ]; then
   alias projects='cd /Volumes/Projects'
 
   # Enable quote of the day
-  QUOTE="true";
+  # QUOTE="true";
 
   if [ -d /Applications/MAMP ]; then
     # Export PATH for MAMP
