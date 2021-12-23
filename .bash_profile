@@ -88,6 +88,9 @@ if [ "$OS" == "Mac" ]; then
   fi
 
   function restoreDMG {
+    if [[ $(brew list --version pv) == "" ]]; then
+      brew install pv
+    fi
     if [[ $1 != "" ]] || [[ $1 == *"dmg"* ]]; then
       dmg=$1
       if [[ $2 == "" ]] || [[ $2 != *"disk"* ]]; then
@@ -107,8 +110,42 @@ if [ "$OS" == "Mac" ]; then
         diskutil unmount $partition
       done
       pv -tpreb $dmg | sudo dd of=/dev/$disk
+      for partition in $(diskutil list $disk | grep $disk | egrep -v '0:' | egrep -v '/dev/' | awk '{ print $NF }');do
+        echo "Unmounting $partition"
+        diskutil unmount $partition
+      done
+      echo "$disk is ready!"
+      echo "You can safely remove $disk"
     else
-      echo "Please specify a dmg file"
+      echo "Please specify a dmg file to restore"
+    fi
+  }
+
+  function saveDMG {
+    if [[ $(brew list --version pv) == "" ]]; then
+      brew install pv
+    fi
+    if [[ $1 != "" ]] || [[ $1 == *"dmg"* ]]; then
+      dmg=$1
+      if [[ $2 == "" ]] || [[ $2 != *"disk"* ]]; then
+        for disk in $(diskutil list | grep disk | egrep -v '\(' | grep 0: | awk '{ print $NF }');do
+          if [[ $(diskutil info /dev/$disk | grep 'Protocol' | awk '{ print $NF}') == "USB" ]] && [[ $(diskutil info /dev/$disk | grep 'APFS Physical Store') == "" ]]; then
+            diskutil list $disk
+          fi
+        done
+        echo "Wich disk do you want to use?"
+        read disk
+      else
+        disk=$2
+      fi
+      echo "Saving /dev/$disk into $dmg"
+      for partition in $(diskutil list $disk | grep $disk | egrep -v '0:' | egrep -v '/dev/' | awk '{ print $NF }');do
+        echo "Unmounting $partition"
+        diskutil unmount $partition
+      done
+      pv -tpreb /dev/$disk | sudo dd of=$dmg
+    else
+      echo "Please specify a dmg file name"
     fi
   }
 
