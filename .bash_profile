@@ -87,6 +87,64 @@ if [ "$OS" == "Mac" ]; then
     source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
   fi
 
+  function toCIDR {
+    c=0 x=0$( printf '%o' ${1//./ } )
+    while [ $x -gt 0 ]; do
+      let c+=$((x%2)) 'x>>=1'
+    done
+    echo $c
+  }
+
+  function scanPort {
+    # Install requirements
+    if [[ $(brew list --version nmap) == "" ]]; then
+      brew install nmap
+    fi
+    # INIT all variables
+    network=
+    port=
+    mask=
+    cidr=
+    ipcidr=
+    scan=
+    input=
+    # Handle input
+    if [[ $3 != "" ]];then
+      network=$1
+      port=$3
+      if [[ $2 == *"."* ]]; then mask=$2; else cidr=$2; fi
+    else
+      if [[ $2 != "" ]];then
+        if [[ $1 == *"/"* ]]; then ipcidr=$1; else network=$1; fi
+        if [[ $2 == *"."* ]]; then mask=$2; else cidr=$2; fi
+        if [[ $ipcidr != "" ]]; then port=$2; fi
+      else
+        if [[ $1 != "" ]];then
+          if [[ $1 == *"/"* ]]; then ipcidr=$1; else network=$1; fi
+        fi
+      fi
+    fi
+    # Build scan profile
+    while [[ $scan == "" ]];do
+      if [[ $ipcidr != "" ]] && [[ $port != "" ]]; then scan="${port} ${ipcidr}"; fi
+      if [[ $port == "" ]]; then echo "Which port are you scanning?"; read port; fi
+      if [[ $network != "" ]] && [[ $cidr != "" ]]; then ipcidr="${network}/${cidr}"; fi
+      if [[ "${network}${ipcidr}" == "" ]]; then
+        echo "What network do you want to scan?(0.0.0.0/24)"
+        read input
+        if [[ $input == *"/"* ]]; then ipcidr=$input; else network=$input; fi
+      fi
+      if [[ "${mask}${cidr}${ipcidr}" == "" ]]; then
+        echo "What is the subnet mask?(CIDR or 255.255.255.0)"
+        read input
+        if [[ $input == *"."* ]]; then mask=$input; else cidr=$input; fi
+      fi
+      if [[ $cidr == "" ]] && [[ $mask != "" ]]; then cidr=$(toCIDR $mask); fi
+    done
+    # Start Scanning
+    nmap -p ${scan} | egrep -B 4 "open" | grep for | awk '{ print $5 }'
+  }
+
   function restoreDMG {
     if [[ $(brew list --version pv) == "" ]]; then
       brew install pv

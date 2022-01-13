@@ -34,8 +34,40 @@ export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
 ```
 
 ### Functions
+#### saveDMG
+This function can be used to backup a disk into a dmg file. If you are missing some arguments, it will ask for the necessary information.
+
+##### Usage
+```bash
+saveDMG [disk]
+```
+
+#### restoreDMG
+This function can be used to restore a dmg onto a disk. If you are missing some arguments, it will ask for the necessary information.
+
+##### Usage
+```bash
+restoreDMG [dmg] [disk]
+```
+
+#### scanPort
+This function will scan a network for all ip that have a specified port open. If you are missing some arguments, it will ask for the necessary information.
+
+##### Usage
+```bash
+scanPort [network/cidr or network] [mask or cidr] [port]
+```
+
+#### toCIDR
+This function converts a subnet mask like 255.255.255.0 to 24.
+
+##### Usage
+```bash
+toCIDR 255.255.255.0
+```
+
 #### burnWin10ISO
-This funtion provides an easy way to burn a Windows 10 ISO onto a USB. It also does several checks to avoid potential harm to your computer.
+This function provides an easy way to burn a Windows 10 ISO onto a USB. It also does several checks to avoid potential harm to your computer.
 
 ##### Usage
 ```bash
