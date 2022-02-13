@@ -427,11 +427,9 @@ else
           sudo systemctl enable unifi
           sudo systemctl start unifi
           sudo systemctl status unifi
-          exit
           ;;
         *)
           echo "There is no installation script for this software"
-          exit
           ;;
       esac
     }
