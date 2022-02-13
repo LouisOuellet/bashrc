@@ -417,7 +417,7 @@ else
         echo " - UniFi_Controller"
       fi
       case pkg in
-        "UniFi_Controller")
+        UniFi_Controller)
           sudo apt-get update && sudo apt-get install ca-certificates apt-transport-https gnupg -y
           sudo apt-get update && sudo apt-get install mongodb-org -y
           echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | sudo tee /etc/apt/sources.list.d/100-ubnt-unifi.list
