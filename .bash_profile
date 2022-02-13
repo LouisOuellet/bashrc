@@ -402,11 +402,39 @@ else
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
   fi
+  # If Based on Debian
   if [ "$(whereis apt-get | awk '{ print $2 }')" != '' ]; then
     # One line update system
     alias update="sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y"
     # One line upgrade system
     alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
+    # Functions
+    function install {
+      if [[ "$1" != '' ]]; then
+        pkg=$1
+      else
+        echo "Please select a software to install:"
+        echo " - UniFi_Controller"
+      fi
+      case pkg in
+        "UniFi_Controller")
+          sudo apt-get update && sudo apt-get install ca-certificates apt-transport-https gnupg -y
+          sudo apt-get update && sudo apt-get install mongodb-org -y
+          echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | sudo tee /etc/apt/sources.list.d/100-ubnt-unifi.list
+          sudo wget -O /etc/apt/trusted.gpg.d/unifi-repo.gpg https://dl.ui.com/unifi/unifi-repo.gpg
+          sudo apt-mark hold openjdk-11-*
+          sudo apt-get update && sudo apt-get install unifi -y
+          sudo systemctl enable unifi
+          sudo systemctl start unifi
+          sudo systemctl status unifi
+          exit
+          ;;
+        *)
+          echo "There is no installation script for this software"
+          exit
+          ;;
+      esac
+    }
   fi
 fi
 
