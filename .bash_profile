@@ -416,9 +416,9 @@ else
         echo "Please select a software to install:"
         echo " - UniFi_Controller"
       fi
-      echo "Installing $pkg"
-      case pkg in
+      case $pkg in
         UniFi_Controller)
+          echo "Installing UniFi Controller"
           sudo apt-get update && sudo apt-get install ca-certificates apt-transport-https gnupg -y
           sudo apt-get update && sudo apt-get install mongodb-org -y
           echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | sudo tee /etc/apt/sources.list.d/100-ubnt-unifi.list
@@ -430,7 +430,7 @@ else
           sudo systemctl status unifi
           ;;
         *)
-          echo "There is no installation script for this software"
+          echo "There is no installation script for $pkg"
           ;;
       esac
     }
