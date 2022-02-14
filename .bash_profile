@@ -419,15 +419,10 @@ else
       case $pkg in
         UniFi_Controller)
           echo "Installing UniFi Controller"
-          sudo apt-get update && sudo apt-get install ca-certificates apt-transport-https gnupg -y
-          sudo apt-get update && sudo apt-get install mongodb-org -y
-          echo 'deb https://www.ui.com/downloads/unifi/debian stable ubiquiti' | sudo tee /etc/apt/sources.list.d/100-ubnt-unifi.list
-          sudo wget -O /etc/apt/trusted.gpg.d/unifi-repo.gpg https://dl.ui.com/unifi/unifi-repo.gpg
-          sudo apt-mark hold openjdk-11-*
-          sudo apt-get update && sudo apt-get install unifi -y
-          sudo systemctl enable unifi
-          sudo systemctl start unifi
-          sudo systemctl status unifi
+          wget "https://github.com/LouisOuellet/UniFi/raw/master/install-unifi-pihole-English.sh" -O install-unifi-pihole.sh
+          chmod +x install-unifi-pihole.sh
+          ./install-unifi-pihole.sh no-pihole
+          rm install-unifi-pihole.sh
           ;;
         *)
           echo "There is no installation script for $pkg"
