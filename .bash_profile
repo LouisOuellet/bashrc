@@ -402,8 +402,23 @@ else
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
   fi
+  # Get Distribution and Architecture
+  if [[ "$OS" == "Linux" ]]; then
+    Distribution=$(hostnamectl | grep 'Operating System' | awk '{ print $3 }')
+    Architecture=$(hostnamectl | grep 'Architecture' | awk '{ print $2 }')
+    if [[ "$(hostnamectl | grep 'Hardware Vendor' | awk '{ print $3 }')" == "QEMU" ]]; then
+      isVM=true
+    else
+      isVM=false
+    fi
+  fi
   # If Based on Debian
   if [ "$(whereis apt-get | awk '{ print $2 }')" != '' ]; then
+    # Adding aliases to enable/disable GUI Desktop
+    if [[ "$Distribution" == "Ubuntu" ]]; then
+      alias setCLI="sudo systemctl set-default multi-user && echo You need to reboot the system"
+      alias setGUI="sudo systemctl set-default graphical && echo You need to reboot the system"
+    fi
     # One line update system
     alias update="sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y"
     # One line upgrade system
