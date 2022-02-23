@@ -423,6 +423,8 @@ else
     alias update="sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y"
     # One line upgrade system
     alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
+    # One line check update
+    alias checkUpdate="sudo apt list --upgradable"
     # Functions
     function install {
       if [[ "$1" != '' ]]; then
