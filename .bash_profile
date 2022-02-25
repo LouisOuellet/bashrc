@@ -88,8 +88,10 @@ if [ "$OS" == "Mac" ]; then
   fi
 
   function piKVM {
+    kvm=
     if [[ $1 != "" ]]; then kvm=$1; fi
     if [[ $kvm == "" ]]; then echo "KVM IP?"; read kvm; fi
+    echo "Connecting to $kvm"
     /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --app="https://$kvm/"
   }
 
