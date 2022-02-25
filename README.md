@@ -34,6 +34,13 @@ export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
 ```
 
 ### Functions
+#### piKVM
+This function opens Google Chrome as a web app to the specified PiKVM. If you are missing some arguments, it will ask for the necessary information.
+
+##### Usage
+```bash
+piKVM [IP]
+```
 #### saveDMG
 This function can be used to backup a disk into a dmg file. If you are missing some arguments, it will ask for the necessary information.
 
