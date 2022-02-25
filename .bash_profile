@@ -87,6 +87,12 @@ if [ "$OS" == "Mac" ]; then
     source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
   fi
 
+  function piKVM {
+    if [[ $1 != "" ]]; then kvm=$1; fi
+    if [[ $kvm == "" ]]; then echo "KVM IP?"; read kvm; fi
+    /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --app="https://$kvm/"
+  }
+
   function toCIDR {
     c=0 x=0$( printf '%o' ${1//./ } )
     while [ $x -gt 0 ]; do
