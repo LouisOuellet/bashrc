@@ -513,7 +513,11 @@ PS1="${PS1}\n\342\224\224\342\224\200\342\224\200\342\225\274 $ "
 # Greetings
 if [[ $- == *i* ]]; then
   if [[ "$Distribution" == "Ubuntu" ]] || [[ "$Distribution" == "Debian" ]]; then
-    linuxlogo
+    if [[ $EUID -ne 0 ]]; then
+      linuxlogo -u -y -b
+    else
+      toilet -f smblock --filter border -w 120 ' Careful!   You are now root! '
+    fi
   fi
   echo
   echo -ne "Good Morning, $USER! It's "; date '+%A, %B %-d %Y'
