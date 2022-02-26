@@ -460,13 +460,13 @@ else
         fi
         if [ "$(whereis apt-get | awk '{ print $2 }')" != '' ]; then
           # Installing some packages
-          if [ "$(whereis toilet | awk '{ print $2 }')" != '' ]; then
+          if [ "$(whereis toilet | awk '{ print $2 }')" == '' ]; then
             sudo apt-get install -y toilet
           fi
-          if [ "$(whereis cowsay | awk '{ print $2 }')" != '' ]; then
+          if [ "$(whereis cowsay | awk '{ print $2 }')" == '' ]; then
             sudo apt-get install -y cowsay
           fi
-          if [ "$(whereis linuxlogo | awk '{ print $2 }')" != '' ]; then
+          if [ "$(whereis linuxlogo | awk '{ print $2 }')" == '' ]; then
             sudo apt-get install -y linuxlogo
           fi
           # One line update system
