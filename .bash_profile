@@ -512,9 +512,11 @@ PS1="${PS1}\n\342\224\224\342\224\200\342\224\200\342\225\274 $ "
 
 # Greetings
 if [[ $- == *i* ]]; then
-  if [[ "$Distribution" == "Ubuntu" ]] || [[ "$Distribution" == "Debian" ]]; then
+  if [[ "$Distribution" == "Ubuntu" ]] || [[ "$Distribution" == "Debian" ]] || [[ "$OS" == "Mac" ]]; then
     if [[ $EUID -ne 0 ]]; then
-      linuxlogo -u -y -b
+      if [[ "$OS" == "Linux" ]]; then
+        linuxlogo -u -y -b
+      fi
     else
       echo
       toilet -f smblock --filter border -w 120 ' Careful!   You are now root! '
