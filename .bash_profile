@@ -45,7 +45,10 @@ if [[ $- == *i* ]]; then
 fi
 
 # Make ls Readable
-alias ls="ls -lh"
+alias ls="ls -lh --group-directories-first"
+# alias cpr='rsync -ur --progress'
+# alias mvr='rsync -ur --progress --remove-sent-files'
+# Requirements
 
 # Enable color support
 if [ -x /usr/bin/dircolors ]; then
@@ -419,20 +422,6 @@ else
     else
       isVM=false
     fi
-  fi
-  # If Based on Debian
-  if [ "$(whereis apt-get | awk '{ print $2 }')" != '' ]; then
-    # Adding aliases to enable/disable GUI Desktop
-    if [[ "$Distribution" == "Ubuntu" ]]; then
-      alias setCLI="sudo systemctl set-default multi-user && echo You need to reboot the system"
-      alias setGUI="sudo systemctl set-default graphical && echo You need to reboot the system"
-    fi
-    # One line update system
-    alias update="sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y"
-    # One line upgrade system
-    alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
-    # One line check update
-    alias checkUpdate="sudo apt list --upgradable"
     # Functions
     function install {
       if [[ "$1" != '' ]]; then
@@ -449,11 +438,46 @@ else
           ./install-unifi-pihole.sh no-pihole
           rm install-unifi-pihole.sh
           ;;
+        PiKVM_OLED)
+          rw
+          systemctl enable --now kvmd-oled kvmd-oled-reboot kvmd-oled-shutdown
+          systemctl enable --now kvmd-fan
+          ro
+          ;;
         *)
           echo "There is no installation script for $pkg"
           ;;
       esac
     }
+    case $Distribution in
+      Arch)
+        ;;
+      Ubuntu)
+        # Adding aliases to enable/disable GUI Desktop
+        alias setCLI="sudo systemctl set-default multi-user && echo You need to reboot the system"
+        alias setGUI="sudo systemctl set-default graphical && echo You need to reboot the system"
+      Debian)
+        if [ "$(whereis apt-get | awk '{ print $2 }')" != '' ]; then
+          # Installing some packages
+          if [ "$(whereis toilet | awk '{ print $2 }')" != '' ]; then
+            sudo apt-get install -y toilet
+          fi
+          if [ "$(whereis cowsay | awk '{ print $2 }')" != '' ]; then
+            sudo apt-get install -y cowsay
+          fi
+          if [ "$(whereis linuxlogo | awk '{ print $2 }')" != '' ]; then
+            sudo apt-get install -y linuxlogo
+          fi
+          # One line update system
+          alias update="sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y"
+          # One line upgrade system
+          alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
+          # One line check update
+          alias checkUpdate="sudo apt list --upgradable"
+        fi
+        ;;
+      *);;
+    esac
   fi
 fi
 

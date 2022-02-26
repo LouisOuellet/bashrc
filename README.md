@@ -34,6 +34,7 @@ export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
 ```
 
 ### Functions
+
 #### piKVM
 This function opens Google Chrome as a web app to the specified PiKVM. If you are missing some arguments, it will ask for the necessary information.
 
@@ -81,9 +82,21 @@ This function provides an easy way to burn a Windows 10 ISO onto a USB. It also 
 burnWin10ISO disk iso.file
 ```
 
-## Aliases for Debian base Distributions
+## Extra for Linux
 
+### Aliases for Debian base Distributions
 ```bash
 alias update="sudo apt-get update && sudo sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y"
 alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
+alias checkUpdate="sudo apt list --upgradable"
+```
+
+### Aliases for Ubuntu base Distributions
+```bash
+alias setCLI="sudo systemctl set-default multi-user && echo You need to reboot the system"
+alias setGUI="sudo systemctl set-default graphical && echo You need to reboot the system"
+```
+
+### Aliases for Arch base Distributions
+```bash
 ```
