@@ -516,6 +516,7 @@ if [[ $- == *i* ]]; then
     if [[ $EUID -ne 0 ]]; then
       linuxlogo -u -y -b
     else
+      echo
       toilet -f smblock --filter border -w 120 ' Careful!   You are now root! '
     fi
   fi
