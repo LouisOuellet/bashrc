@@ -512,6 +512,9 @@ PS1="${PS1}\n\342\224\224\342\224\200\342\224\200\342\225\274 $ "
 
 # Greetings
 if [[ $- == *i* ]]; then
+  if [[ "$Distribution" == "Ubuntu" ]] || [[ "$Distribution" == "Debian" ]]; then
+    linuxlogo
+  fi
   echo
   echo -ne "Good Morning, $USER! It's "; date '+%A, %B %-d %Y'
   echo
