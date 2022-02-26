@@ -469,6 +469,9 @@ else
           if [ "$(whereis linuxlogo | awk '{ print $2 }')" == '' ]; then
             sudo apt-get install -y linuxlogo
           fi
+          if [ "$(whereis figlet | awk '{ print $2 }')" == '' ]; then
+            sudo apt-get install -y figlet
+          fi
           # One line update system
           alias update="sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y"
           # One line upgrade system
