@@ -452,11 +452,12 @@ else
     case $Distribution in
       Arch)
         ;;
-      Ubuntu)
-        # Adding aliases to enable/disable GUI Desktop
-        alias setCLI="sudo systemctl set-default multi-user && echo You need to reboot the system"
-        alias setGUI="sudo systemctl set-default graphical && echo You need to reboot the system"
-      Debian)
+      Debian|Ubuntu)
+        if [[ "$Distribution" == "Ubuntu" ]]; then
+          # Adding aliases to enable/disable GUI Desktop
+          alias setCLI="sudo systemctl set-default multi-user && echo You need to reboot the system"
+          alias setGUI="sudo systemctl set-default graphical && echo You need to reboot the system"
+        fi
         if [ "$(whereis apt-get | awk '{ print $2 }')" != '' ]; then
           # Installing some packages
           if [ "$(whereis toilet | awk '{ print $2 }')" != '' ]; then
