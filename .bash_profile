@@ -451,6 +451,23 @@ else
     }
     case $Distribution in
       Arch)
+        if [ "$(whereis pacman | awk '{ print $2 }')" != '' ]; then
+          # Installing some packages
+          if [ "$(whereis toilet | awk '{ print $2 }')" == '' ]; then
+            sudo pacman -S -y toilet
+          fi
+          if [ "$(whereis cowsay | awk '{ print $2 }')" == '' ]; then
+            sudo pacman -S -y cowsay
+          fi
+          if [ "$(whereis linuxlogo | awk '{ print $2 }')" == '' ]; then
+            sudo pacman -S -y linuxlogo
+          fi
+          if [ "$(whereis figlet | awk '{ print $2 }')" == '' ]; then
+            sudo pacman -S -y figlet
+          fi
+          # One line update system
+          alias update="sudo pacman -Syu"
+        fi
         ;;
       Debian|Ubuntu)
         if [[ "$Distribution" == "Ubuntu" ]]; then
