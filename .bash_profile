@@ -23,11 +23,11 @@ set -o pipefail
 # Identify OS
 unameOut="$(uname -s)"
 case "${unameOut}" in
-    Linux*)     OS=Linux;;
-    Darwin*)    OS=Mac;;
-    CYGWIN*)    OS=Windows;;
-    MINGW*)     OS=MinGw;;
-    *)          OS="UNKNOWN:${unameOut}"
+  Linux*)     OS=Linux;;
+  Darwin*)    OS=Mac;;
+  CYGWIN*)    OS=Windows;;
+  MINGW*)     OS=MinGw;;
+  *)          OS="UNKNOWN:${unameOut}"
 esac
 
 # Identify Distribution
@@ -63,55 +63,55 @@ fi
 #==============================================================================
 
 function format(){
-    # COLORS
-    blackText=$(tput setaf 0)           # Black
-    redText=$(tput setaf 1)             # Red
-    greenText=$(tput setaf 2)           # Green
-    yellowText=$(tput setaf 3)          # Yellow
-    blueText=$(tput setaf 4)            # Blue
-    magentaText=$(tput setaf 5)         # Magenta
-    cyanText=$(tput setaf 6)            # Cyan
-    whiteText=$(tput setaf 7)           # White
-    greyText=$(tput setaf 8)            # Grey
-    lightredText=$(tput setaf 9)        # Light Red
-    lightgreenText=$(tput setaf 10)     # Light Green
-    lightyellowText=$(tput setaf 11)    # Light Yellow
-    lightblueText=$(tput setaf 12)      # Light Blue
-    lightmagentaText=$(tput setaf 13)   # Light Magenta
-    lightcyanText=$(tput setaf 14)      # Light Cyan
-    lightgreyText=$(tput setaf 15)      # Light Grey
-    resetText=$(tput sgr0)              # Reset to default color
+  # COLORS
+  blackText=$(tput setaf 0)           # Black
+  redText=$(tput setaf 1)             # Red
+  greenText=$(tput setaf 2)           # Green
+  yellowText=$(tput setaf 3)          # Yellow
+  blueText=$(tput setaf 4)            # Blue
+  magentaText=$(tput setaf 5)         # Magenta
+  cyanText=$(tput setaf 6)            # Cyan
+  whiteText=$(tput setaf 7)           # White
+  greyText=$(tput setaf 8)            # Grey
+  lightredText=$(tput setaf 9)        # Light Red
+  lightgreenText=$(tput setaf 10)     # Light Green
+  lightyellowText=$(tput setaf 11)    # Light Yellow
+  lightblueText=$(tput setaf 12)      # Light Blue
+  lightmagentaText=$(tput setaf 13)   # Light Magenta
+  lightcyanText=$(tput setaf 14)      # Light Cyan
+  lightgreyText=$(tput setaf 15)      # Light Grey
+  resetText=$(tput sgr0)              # Reset to default color
 
-    # STYLES
-    boldText=$(tput bold)
-    blinkingText=$(tput blink)
-    dimText=$(tput dim)
+  # STYLES
+  boldText=$(tput bold)
+  blinkingText=$(tput blink)
+  dimText=$(tput dim)
 }
 
 function clrformat(){
-    # COLORS
-    blackText=
-    redText=
-    greenText=
-    yellowText=
-    blueText=
-    magentaText=
-    cyanText=
-    whiteText=
-    greyText=
-    lightredText=
-    lightgreenText=
-    lightyellowText=
-    lightblueText=
-    lightmagentaText=
-    lightcyanText=
-    lightgreyText=
-    resetText=
+  # COLORS
+  blackText=
+  redText=
+  greenText=
+  yellowText=
+  blueText=
+  magentaText=
+  cyanText=
+  whiteText=
+  greyText=
+  lightredText=
+  lightgreenText=
+  lightyellowText=
+  lightblueText=
+  lightmagentaText=
+  lightcyanText=
+  lightgreyText=
+  resetText=
 
-    # STYLES
-    boldText=
-    blinkingText=
-    dimText=
+  # STYLES
+  boldText=
+  blinkingText=
+  dimText=
 }
 
 #==============================================================================
@@ -119,34 +119,34 @@ function clrformat(){
 #==============================================================================
 
 function elements(){
-    # CHECK BOXES
-    checkBoxGood="[${greenText}✓${resetText}]"        # Good
-    checkBoxBad="[${redText}✗${resetText}]"           # Bad
-    checkBoxQuestion="[${magentaText}?${resetText}]"  # Question / ?
-    checkBoxInfo="[${cyanText}i${resetText}]"         # Info / i
-    checkBoxOutput="[${yellowText}!${resetText}]"     # Output / !
+  # CHECK BOXES
+  checkBoxGood="[${greenText}✓${resetText}]"        # Good
+  checkBoxBad="[${redText}✗${resetText}]"           # Bad
+  checkBoxQuestion="[${magentaText}?${resetText}]"  # Question / ?
+  checkBoxInfo="[${cyanText}i${resetText}]"         # Info / i
+  checkBoxOutput="[${yellowText}!${resetText}]"     # Output / !
 
-    # FRAMES
-    frameTopLeft="\342\224\214"      # ┌
-    frameBottomLeft="\342\224\224"   # └
-    frameHline="\342\224\200"        # -
-    frameHlineEnd="\342\225\274"     # ╼
+  # FRAMES
+  frameTopLeft="\342\224\214"      # ┌
+  frameBottomLeft="\342\224\224"   # └
+  frameHline="\342\224\200"        # -
+  frameHlineEnd="\342\225\274"     # ╼
 
-    # Log Types
-    INFO=$checkBoxInfo
-    OUTPUT=$checkBoxOutput
-    SUCCESS=$checkBoxGood
-    ERROR=$checkBoxBad
-    WARNING=$checkBoxOutput
+  # Log Types
+  INFO=$checkBoxInfo
+  OUTPUT=$checkBoxOutput
+  SUCCESS=$checkBoxGood
+  ERROR=$checkBoxBad
+  WARNING=$checkBoxOutput
 
-    # Log Actions
-    CHECK="[CHECK]"
-    START="[START]"
-    TIMED="[TIMED]"
-    RUN="[ RUN ]"
-    EMPT="[     ]"
-    OUT="[ OUT ]"
-    VAR="[ VAR ]"
+  # Log Actions
+  CHECK="[CHECK]"
+  START="[START]"
+  TIMED="[TIMED]"
+  RUN="[ RUN ]"
+  EMPT="[     ]"
+  OUT="[ OUT ]"
+  VAR="[ VAR ]"
 }
 
 function PDATE(){
