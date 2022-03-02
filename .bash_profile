@@ -1,173 +1,467 @@
+#!/bin/bash
+#==============================================================================
+#TITLE:            bash_profile
+#DESCRIPTION:      This profile include support for all oses (macOS, Ubuntu, Debian, Rasbian, Arch)
+#AUTHOR:           Louis Ouellet
+#DATE:             2022-03-02
+#VERSION:          22.03-02
+
+#==============================================================================
+# BASH SETUP
+#==============================================================================
+
 # Adding /sbin to PATH
 export PATH="$PATH:/sbin"
+
+# Set Bash
+set -o pipefail
+
+#==============================================================================
+# GATHERING SYSTEM INFORMATION
+#==============================================================================
 
 # Identify OS
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     OS=Linux;;
     Darwin*)    OS=Mac;;
-    CYGWIN*)    OS=Cygwin;;
+    CYGWIN*)    OS=Windows;;
     MINGW*)     OS=MinGw;;
     *)          OS="UNKNOWN:${unameOut}"
 esac
 
+# Identify Distribution
+Distribution=
+Architecture=
+PackageManager=
+case $OS in
+  Linux)
+    Distribution=$(hostnamectl | grep 'Operating System' | cut -d: -f2 | xargs)
+    Architecture=$(uname -p)
+    if [[ "$(whereis pacman | awk '{ print $2 }')" != '' ]]; then PackageManager="pacman"; fi
+    if [[ "$(whereis yum | awk '{ print $2 }')" != '' ]]; then PackageManager="yum"; fi
+    if [[ "$(whereis dnf | awk '{ print $2 }')" != '' ]]; then PackageManager="dnf"; fi
+    if [[ "$(whereis apt-get | awk '{ print $2 }')" != '' ]]; then PackageManager="apt-get"; fi
+    ;;
+  Mac)
+    Distribution=$(sw_vers -productVersion)
+    Architecture=$(uname -p)
+    PackageManager="brew"
+    ;;
+  *);;
+esac
+
 # Gathering Network
 if [ "$(whereis ifconfig | awk '{ print $1 }')" == '/sbin/ifconfig' ]; then
-  IP1=$(ifconfig | grep "inet " | grep -v 127.0.0.1 | awk '{ print $2 }' | tail -n 1)
+  IP=$(ifconfig | grep "inet " | egrep -v 127.0.0.1 | awk '{ print $2 }' | tail -n 1)
 else
-  IP1=$(ip a | grep "inet " | egrep -v "127.0.0.1" | head -n 1 | awk '{ print $2 }')
+  IP=$(ip a | grep "inet " | egrep -v "127.0.0.1" | head -n 1 | awk '{ print $2 }')
 fi
 
-if [[ $- == *i* ]]; then
-  # COLORS
-  blackText=$(tput setaf 0)           # Black
-  redText=$(tput setaf 1)             # Red
-  greenText=$(tput setaf 2)           # Green
-  yellowText=$(tput setaf 3)          # Yellow
-  blueText=$(tput setaf 4)            # Blue
-  magentaText=$(tput setaf 5)         # Magenta
-  cyanText=$(tput setaf 6)            # Cyan
-  whiteText=$(tput setaf 7)           # White
-  greyText=$(tput setaf 8)            # Grey
-  lightredText=$(tput setaf 9)        # Light Red
-  lightgreenText=$(tput setaf 10)     # Light Green
-  lightyellowText=$(tput setaf 11)    # Light Yellow
-  lightblueText=$(tput setaf 12)      # Light Blue
-  lightmagentaText=$(tput setaf 13)   # Light Magenta
-  lightcyanText=$(tput setaf 14)      # Light Cyan
-  lightgreyText=$(tput setaf 15)      # Light Grey
-  resetText=$(tput sgr0)              # Reset to default color
+#==============================================================================
+# FORMATTING
+#==============================================================================
 
-  # STYLES
-  boldText=$(tput bold)
-  blinkingText=$(tput blink)
-  dimText=$(tput dim)
-fi
+function format(){
+    # COLORS
+    blackText=$(tput setaf 0)           # Black
+    redText=$(tput setaf 1)             # Red
+    greenText=$(tput setaf 2)           # Green
+    yellowText=$(tput setaf 3)          # Yellow
+    blueText=$(tput setaf 4)            # Blue
+    magentaText=$(tput setaf 5)         # Magenta
+    cyanText=$(tput setaf 6)            # Cyan
+    whiteText=$(tput setaf 7)           # White
+    greyText=$(tput setaf 8)            # Grey
+    lightredText=$(tput setaf 9)        # Light Red
+    lightgreenText=$(tput setaf 10)     # Light Green
+    lightyellowText=$(tput setaf 11)    # Light Yellow
+    lightblueText=$(tput setaf 12)      # Light Blue
+    lightmagentaText=$(tput setaf 13)   # Light Magenta
+    lightcyanText=$(tput setaf 14)      # Light Cyan
+    lightgreyText=$(tput setaf 15)      # Light Grey
+    resetText=$(tput sgr0)              # Reset to default color
 
-# Make ls Readable
-alias ls="ls -lh --group-directories-first"
-# alias cpr='rsync -ur --progress'
-# alias mvr='rsync -ur --progress --remove-sent-files'
-# Requirements
+    # STYLES
+    boldText=$(tput bold)
+    blinkingText=$(tput blink)
+    dimText=$(tput dim)
+}
 
-# Enable color support
-if [ -x /usr/bin/dircolors ]; then
-  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-fi
+function clrformat(){
+    # COLORS
+    blackText=
+    redText=
+    greenText=
+    yellowText=
+    blueText=
+    magentaText=
+    cyanText=
+    whiteText=
+    greyText=
+    lightredText=
+    lightgreenText=
+    lightyellowText=
+    lightblueText=
+    lightmagentaText=
+    lightcyanText=
+    lightgreyText=
+    resetText=
 
-# Configure Editor
-export EDITOR=/usr/bin/nano
+    # STYLES
+    boldText=
+    blinkingText=
+    dimText=
+}
 
-# Handling OSes
-if [ "$OS" == "Mac" ]; then
-	export EDITOR=nano
-	export VISUAL="$EDITOR"
+#==============================================================================
+# Elements
+#==============================================================================
 
-  # Adding homebrew
-  export PATH=/opt/homebrew/bin/:$PATH
+function elements(){
+    # CHECK BOXES
+    checkBoxGood="[${greenText}✓${resetText}]"        # Good
+    checkBoxBad="[${redText}✗${resetText}]"           # Bad
+    checkBoxQuestion="[${magentaText}?${resetText}]"  # Question / ?
+    checkBoxInfo="[${cyanText}i${resetText}]"         # Info / i
+    checkBoxOutput="[${yellowText}!${resetText}]"     # Output / !
 
-  # Silence Terminal
-  export BASH_SILENCE_DEPRECATION_WARNING=1
-	alias ls="ls -lhG"
-	alias grep='grep --color=auto'
-	alias fgrep='fgrep --color=auto'
-	alias egrep='egrep --color=auto'
-  if [ ! -f /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash ]; then
-    if [[ $(brew list --version bash) == "" ]]; then
-      brew install bash
-    fi
-    if [[ $(brew list --version bash-completion) == "" ]]; then
-      brew install bash-completion
-    fi
-    if [[ $(brew list --version git) == "" ]]; then
-      brew install git
-    fi
-  fi
-  if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash ]; then
-    source /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash
-  fi
-  if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh ]; then
-    source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
-  fi
+    # FRAMES
+    frameTopLeft="\342\224\214"      # ┌
+    frameBottomLeft="\342\224\224"   # └
+    frameHline="\342\224\200"        # -
+    frameHlineEnd="\342\225\274"     # ╼
 
-  function piKVM {
-    kvm=
-    if [[ $1 != "" ]]; then kvm=$1; fi
-    if [[ $kvm == "" ]]; then echo "KVM IP?"; read kvm; fi
-    echo "Connecting to $kvm"
-    /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --app="https://$kvm/"
-  }
+    # Log Types
+    INFO=$checkBoxInfo
+    OUTPUT=$checkBoxOutput
+    SUCCESS=$checkBoxGood
+    ERROR=$checkBoxBad
+    WARNING=$checkBoxOutput
 
-  function toCIDR {
-    c=0 x=0$( printf '%o' ${1//./ } )
-    while [ $x -gt 0 ]; do
-      let c+=$((x%2)) 'x>>=1'
-    done
-    echo $c
-  }
+    # Log Actions
+    CHECK="[CHECK]"
+    START="[START]"
+    TIMED="[TIMED]"
+    RUN="[ RUN ]"
+    EMPT="[     ]"
+    OUT="[ OUT ]"
+    VAR="[ VAR ]"
+}
 
-  function scanPort {
-    # Install requirements
-    if [[ $(brew list --version nmap) == "" ]]; then
-      brew install nmap
-    fi
-    # INIT all variables
-    network=
-    port=
-    mask=
-    cidr=
-    ipcidr=
-    scan=
-    input=
-    # Handle input
-    if [[ $3 != "" ]];then
-      network=$1
-      port=$3
-      if [[ $2 == *"."* ]]; then mask=$2; else cidr=$2; fi
-    else
-      if [[ $2 != "" ]];then
-        if [[ $1 == *"/"* ]]; then ipcidr=$1; else network=$1; fi
-        if [[ $2 == *"."* ]]; then mask=$2; else cidr=$2; fi
-        if [[ $ipcidr != "" ]]; then port=$2; fi
+function PDATE(){
+  printf "[$(date '+%Y-%m-%d %H:%M:%S')]"
+}
+
+#==============================================================================
+# HELPERS
+#==============================================================================
+
+function error(){
+  printf "FATAL ERROR: $1\n"
+  exit 0
+}
+
+function dbg(){
+  if [ "$1" != "" ] && [ "$2" != "" ]; then
+    case "$1" in
+      info|i)
+        TYPE=$INFO
+        ;;
+      success|s)
+        TYPE=$SUCCESS
+        ;;
+      error|e)
+        TYPE=$ERROR
+        ;;
+      output|o)
+        TYPE=$OUTPUT
+        ;;
+      warning|w)
+        TYPE=$WARNING
+        ;;
+      question|q)
+        TYPE=$checkBoxQuestion
+        ;;
+    esac
+    case "$2" in
+      check|c|test|t)
+        ACTION=$CHECK
+        ;;
+      start|s)
+        ACTION=$START
+        ;;
+      run|r)
+        ACTION=$RUN
+        ;;
+      empty|e)
+        ACTION=$EMPT
+        ;;
+      output|o)
+        ACTION=$OUT
+        ;;
+      timed|t)
+        ACTION=$TIMED
+        ;;
+      variable|var|v)
+        ACTION=$VAR
+        ;;
+    esac
+    while read DCMD; do
+      if [ "$3" != "" ]; then
+        LogFile=$3
+      fi
+			DCMDout=$(echo $DCMD | sed -e "s/\n/ /g")
+			for string in ${protect[@]};do
+				DCMDout=$(echo $DCMDout | sed -e "s/$string/xxx/g")
+			done
+      if [ "$DEBUG" = "true" ]; then
+        printf "${TYPE}$(PDATE)${ACTION} ${DCMDout}\n" | tee -a $logs_file
       else
-        if [[ $1 != "" ]];then
-          if [[ $1 == *"/"* ]]; then ipcidr=$1; else network=$1; fi
-        fi
+        printf "${TYPE}$(PDATE)${ACTION} ${DCMDout}\n"
       fi
-    fi
-    # Build scan profile
-    while [[ $scan == "" ]];do
-      if [[ $ipcidr != "" ]] && [[ $port != "" ]]; then scan="${port} ${ipcidr}"; fi
-      if [[ $port == "" ]]; then echo "Which port are you scanning?"; read port; fi
-      if [[ $network != "" ]] && [[ $cidr != "" ]]; then ipcidr="${network}/${cidr}"; fi
-      if [[ "${network}${ipcidr}" == "" ]]; then
-        echo "What network do you want to scan?(0.0.0.0/24)"
-        read input
-        if [[ $input == *"/"* ]]; then ipcidr=$input; else network=$input; fi
-      fi
-      if [[ "${mask}${cidr}${ipcidr}" == "" ]]; then
-        echo "What is the subnet mask?(CIDR or 255.255.255.0)"
-        read input
-        if [[ $input == *"."* ]]; then mask=$input; else cidr=$input; fi
-      fi
-      if [[ $cidr == "" ]] && [[ $mask != "" ]]; then cidr=$(toCIDR $mask); fi
     done
-    # Start Scanning
-    nmap -Pn -p ${scan} | egrep -B 4 "open" | grep for | awk '{ print $5 }'
-  }
+  else
+    error "Missing Argument(s)"
+  fi
+}
 
-  function scanIP {
-    # Install requirements
-    if [[ $(brew list --version nmap) == "" ]]; then
-      brew install nmap
+function exec(){
+  if [ "$1" != "" ]; then
+    echo "exec $1" | dbg i s
+    if eval $1 2>&1 | dbg o o;then
+      echo "$1" | dbg s r
+    else
+      echo "$1" | dbg e r
     fi
-    # INIT all variables
-    network=
-    mask=
-    cidr=
-    ipcidr=
-    input=
-    # Handle input
+  else
+    error "Missing Argument(s)"
+  fi
+}
+
+function pkg(){
+  if [ "$1" != "" ]; then
+    if [ "$DEBUG" = "true" ]; then
+      echo "pkg $1" | dbg i s
+    fi
+    case $OS in
+      Linux)
+        if [[ "$(whereis $1 | awk '{ print $2 }')" == '' ]]; then
+          case $PackageManager in
+            pacman)
+              exec "sudo pacman -S --noconfirm $1"
+              ;;
+            dnf)
+              exec "sudo dnf install -y $1"
+              ;;
+            yum)
+              exec "sudo yum install -y $1"
+              ;;
+            apt-get)
+              exec "sudo apt-get update"
+              exec "sudo apt-get install -y --fix-missing $1"
+              ;;
+            *)
+              echo "Unable to install $1" | dbg e e
+              echo "Unsupported Package Manager" | dbg e e
+              ;;
+          esac
+        fi
+        ;;
+      Mac)
+        if [[ $(brew list --version $1) == "" ]]; then
+          exec "brew install $1"
+        fi
+        ;;
+      *)
+        echo "Unable to install $1" | dbg e e
+        echo "Unsupported OS" | dbg e e
+        ;;
+    esac
+  else
+    error "Missing Argument(s)"
+  fi
+}
+
+function send(){
+  exec "echo \"$2\" | s-nail -s \"$1\" -S smtp-use-ssl -S ssl-rand-file=/tmp/mail.entropy -S smtp-auth=login -S smtp=\"smtps://${smtp_host}:${smtp_port}\" -S from=\"${send_from}(${send_name})\" -S smtp-auth-user=\"${smtp_username}\" -S smtp-auth-password=\"${smtp_password}\" -S ssl-verify=ignore -a \"$logs_file\" ${send_to}"
+}
+
+#==============================================================================
+# SETTINGS
+#==============================================================================
+
+function protectDCMD(){
+	protect=(
+		$smtp_host
+		$smtp_port
+		$smtp_username
+		$smtp_password
+		$send_name
+		$send_from
+	)
+}
+
+function import(){
+  if [[ -f "settings.json" ]]; then
+    smtp_host=$(jq -r '.smtp.host' settings.json)
+    smtp_port=$(jq -r '.smtp.port' settings.json)
+    smtp_username=$(jq -r '.smtp.username' settings.json)
+    smtp_password=$(jq -r '.smtp.password' settings.json)
+    send_name=$(jq -r '.send.name' settings.json)
+    send_from=$(jq -r '.send.from' settings.json)
+    send_to=$(jq -r '.send.to' settings.json)
+    logs_directory=$(jq -r '.logs.directory' settings.json)
+  fi
+  blacklists=$(jq -r '.lists[]' list.json)
+  case $OS in
+    Linux)
+      logs_file="${logs_directory}$(date +%s%N).log"
+      ;;
+    Mac)
+      logs_file="${logs_directory}$(date +%s).log"
+      ;;
+    *);;
+  esac
+	protectDCMD
+}
+
+#==============================================================================
+# REQUIREMENTS
+#==============================================================================
+
+pkg bash
+pkg bash-completion
+pkg git
+pkg toilet
+pkg cowsay
+
+case $OS in
+  Linux)
+    pkg linuxlogo
+    ;;
+  Mac);;
+  *);;
+esac
+
+#==============================================================================
+# ALIASES
+#==============================================================================
+
+alias ls="ls -lh --group-directories-first"
+alias upmain='git add . && git commit -m '\''UPDATE'\'' && git push origin main'
+alias fetchmain='git pull origin main'
+alias upmaster='git add . && git commit -m '\''UPDATE'\'' && git push origin master'
+alias fetchmaster='git pull origin master'
+alias upbeta='git add . && git commit -m '\''UPDATE'\'' && git push origin beta'
+alias fetchbeta='git pull origin beta'
+alias updev='git add . && git commit -m '\''UPDATE'\'' && git push origin dev'
+alias fetchdev='git pull origin dev'
+if [ -x /usr/bin/dircolors ]; then
+  alias ls="ls -lh --color --group-directories-first"
+  alias dir='dir --color=auto'
+  alias vdir='vdir --color=auto'
+  alias grep='grep --color=auto'
+  alias fgrep='fgrep --color=auto'
+  alias egrep='egrep --color=auto'
+fi
+
+case $OS in
+  Linux)
+    case $Distribution in
+      Ubuntu|Debian)
+        alias update="sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y"
+        alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
+        alias checkUpdate="sudo apt list --upgradable"
+        if [[ "$Distribution" == "Ubuntu" ]]; then
+          alias setCLI="sudo systemctl set-default multi-user && echo You need to reboot the system"
+          alias setGUI="sudo systemctl set-default graphical && echo You need to reboot the system"
+        fi
+        ;;
+      Arch)
+        alias update="sudo pacman -Syu"
+        ;;
+      *);;
+    esac
+    ;;
+  Mac)
+    alias ls="ls -lhG"
+    alias projects='cd /Volumes/Projects'
+    ;;
+  *);;
+esac
+
+#==============================================================================
+# SOURCING
+#==============================================================================
+
+case $OS in
+  Linux);;
+  Mac)
+    # Git Integration
+    if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash ]; then
+      source /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash
+    fi
+    if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh ]; then
+      source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
+    fi
+  	# Homebrew Integration
+  	eval "$(/opt/homebrew/bin/brew shellenv)"
+    # Adding homebrew
+    export PATH=/opt/homebrew/bin/:$PATH
+  	# iTerm2 Integration
+  	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+    ;;
+  *);;
+esac
+
+#==============================================================================
+# FUNCTIONS
+#==============================================================================
+
+function piKVM {
+  kvm=
+  if [[ $1 != "" ]]; then kvm=$1; fi
+  if [[ "${kvm}" == "" ]]; then echo "KVM IP?"; read kvm; fi
+  echo "Connecting to ${kvm}"
+  case $OS in
+    Linux)
+      `which chromium 2>/dev/null || which chrome 2>/dev/null || which google-chrome` --app="https://${kvm}/"
+      ;;
+    Mac)
+      /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --app="https://${kvm}/"
+      ;;
+    Windows)
+      C:\> start chrome --app="https://${kvm}/"
+      ;;
+  esac
+}
+
+function toCIDR {
+  c=0 x=0$( printf '%o' ${1//./ } )
+  while [ $x -gt 0 ]; do
+    let c+=$((x%2)) 'x>>=1'
+  done
+  echo $c
+}
+
+function scanPort {
+  # Install requirements
+  pkg nmap
+  # INIT all variables
+  network=
+  port=
+  mask=
+  cidr=
+  ipcidr=
+  scan=
+  input=
+  # Handle input
+  if [[ $3 != "" ]];then
+    network=$1
+    port=$3
+    if [[ $2 == *"."* ]]; then mask=$2; else cidr=$2; fi
+  else
     if [[ $2 != "" ]];then
       if [[ $1 == *"/"* ]]; then ipcidr=$1; else network=$1; fi
       if [[ $2 == *"."* ]]; then mask=$2; else cidr=$2; fi
@@ -177,29 +471,69 @@ if [ "$OS" == "Mac" ]; then
         if [[ $1 == *"/"* ]]; then ipcidr=$1; else network=$1; fi
       fi
     fi
-    # Build scan profile
-    while [[ $ipcidr == "" ]];do
-      if [[ $network != "" ]] && [[ $cidr != "" ]]; then ipcidr="${network}/${cidr}"; fi
-      if [[ "${network}${ipcidr}" == "" ]]; then
-        echo "What network do you want to scan?(0.0.0.0/24)"
-        read input
-        if [[ $input == *"/"* ]]; then ipcidr=$input; else network=$input; fi
-      fi
-      if [[ "${mask}${cidr}${ipcidr}" == "" ]]; then
-        echo "What is the subnet mask?(CIDR or 255.255.255.0)"
-        read input
-        if [[ $input == *"."* ]]; then mask=$input; else cidr=$input; fi
-      fi
-      if [[ $cidr == "" ]] && [[ $mask != "" ]]; then cidr=$(toCIDR $mask); fi
-    done
-    # Start Scanning
-    nmap -sn -n ${ipcidr} | grep report | awk '{ print $5 }'
-  }
-
-  function restoreDMG {
-    if [[ $(brew list --version pv) == "" ]]; then
-      brew install pv
+  fi
+  # Build scan profile
+  while [[ $scan == "" ]];do
+    if [[ $ipcidr != "" ]] && [[ $port != "" ]]; then scan="${port} ${ipcidr}"; fi
+    if [[ $port == "" ]]; then echo "Which port are you scanning?"; read port; fi
+    if [[ $network != "" ]] && [[ $cidr != "" ]]; then ipcidr="${network}/${cidr}"; fi
+    if [[ "${network}${ipcidr}" == "" ]]; then
+      echo "What network do you want to scan?(0.0.0.0/24)"
+      read input
+      if [[ $input == *"/"* ]]; then ipcidr=$input; else network=$input; fi
     fi
+    if [[ "${mask}${cidr}${ipcidr}" == "" ]]; then
+      echo "What is the subnet mask?(CIDR or 255.255.255.0)"
+      read input
+      if [[ $input == *"."* ]]; then mask=$input; else cidr=$input; fi
+    fi
+    if [[ $cidr == "" ]] && [[ $mask != "" ]]; then cidr=$(toCIDR $mask); fi
+  done
+  # Start Scanning
+  nmap -Pn -p ${scan} | egrep -B 4 "open" | grep for | awk '{ print $5 }'
+}
+
+function scanIP {
+  # Install requirements
+  pkg nmap
+  # INIT all variables
+  network=
+  mask=
+  cidr=
+  ipcidr=
+  input=
+  # Handle input
+  if [[ $2 != "" ]];then
+    if [[ $1 == *"/"* ]]; then ipcidr=$1; else network=$1; fi
+    if [[ $2 == *"."* ]]; then mask=$2; else cidr=$2; fi
+    if [[ $ipcidr != "" ]]; then port=$2; fi
+  else
+    if [[ $1 != "" ]];then
+      if [[ $1 == *"/"* ]]; then ipcidr=$1; else network=$1; fi
+    fi
+  fi
+  # Build scan profile
+  while [[ $ipcidr == "" ]];do
+    if [[ $network != "" ]] && [[ $cidr != "" ]]; then ipcidr="${network}/${cidr}"; fi
+    if [[ "${network}${ipcidr}" == "" ]]; then
+      echo "What network do you want to scan?(0.0.0.0/24)"
+      read input
+      if [[ $input == *"/"* ]]; then ipcidr=$input; else network=$input; fi
+    fi
+    if [[ "${mask}${cidr}${ipcidr}" == "" ]]; then
+      echo "What is the subnet mask?(CIDR or 255.255.255.0)"
+      read input
+      if [[ $input == *"."* ]]; then mask=$input; else cidr=$input; fi
+    fi
+    if [[ $cidr == "" ]] && [[ $mask != "" ]]; then cidr=$(toCIDR $mask); fi
+  done
+  # Start Scanning
+  nmap -sn -n ${ipcidr} | grep report | awk '{ print $5 }'
+}
+
+if [[ "$OS" == "Mac" ]]; then
+  function restoreDMG {
+    pkg pv
     if [[ $1 != "" ]] || [[ $1 == *"dmg"* ]]; then
       dmg=$1
       if [[ $2 == "" ]] || [[ $2 != *"disk"* ]]; then
@@ -231,9 +565,7 @@ if [ "$OS" == "Mac" ]; then
   }
 
   function saveDMG {
-    if [[ $(brew list --version pv) == "" ]]; then
-      brew install pv
-    fi
+    pkg pv
     if [[ $1 != "" ]] || [[ $1 == *"dmg"* ]]; then
       dmg=$1
       if [[ $2 == "" ]] || [[ $2 != *"disk"* ]]; then
@@ -331,210 +663,79 @@ if [ "$OS" == "Mac" ]; then
     php cli.php --publish
     cd $directory
   }
-
-  function burnWin10ISO {
-    if [[ $(brew list --version wimlib) == "" ]]; then
-      brew install wimlib
-    fi
-    if [[ $1 != "" ]]; then
-      if [[ $1 == "disk"* ]]; then
-        INFO=$(diskutil info $1 | grep "Protocol:" | awk '{ print $2 }')
-        if [[ $INFO == *"USB"* ]]; then
-          if [[ $2 == *".iso" ]]; then
-            if [ -f "${2}" ]; then
-              diskutil eraseDisk MS-DOS 'WIN10' GPT /dev/${1}
-              hdiutil mount ${2}
-              rsync -vha --exclude=sources/install.wim /Volumes/CCCOMA_X64FRE_EN-US_DV9/* /Volumes/WIN10
-              mkdir -p /Volumes/WIN10/sources
-              wimlib-imagex split /Volumes/CCCOMA_X64FRE_EN-US_DV9/sources/install.wim /Volumes/WIN10/sources/install.swm 3800
-              diskutil unmount /dev/${1}
-              diskutil eject /dev/${1}
-              diskutil unmount /Volumes/CCCOMA_X64FRE_EN-US_DV9
-              echo "${2} has been written on ${1}. You can now disconnect ${1} and start your installation."
-            else
-              echo "Unable to find ${2}."
-            fi
-          else
-            echo "${2} is not an ISO file or you did not specify an ISO file."
-          fi
-        else
-          echo "${1} is not available on this computer or is not a USB Drive. Here's the list:"
-          diskutil list
-        fi
-      else
-        echo "${1} is not a disk or you did not specify a disk. Here's the list:"
-        diskutil list
-      fi
-    else
-      echo "burnWin10ISO [disk] [iso file]"
-    fi
-  }
-
-	# Homebrew Integration
-	eval "$(/opt/homebrew/bin/brew shellenv)"
-
-	# iTerm2 Integration
-	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
-
-  # Adding common ALIASES
-  alias upmain='git add . && git commit -m '\''UPDATE'\'' && git push origin main'
-  alias fetchmain='git pull origin main'
-  alias upmaster='git add . && git commit -m '\''UPDATE'\'' && git push origin master'
-  alias fetchmaster='git pull origin master'
-  alias upbeta='git add . && git commit -m '\''UPDATE'\'' && git push origin beta'
-  alias fetchbeta='git pull origin beta'
-  alias updev='git add . && git commit -m '\''UPDATE'\'' && git push origin dev'
-  alias fetchdev='git pull origin dev'
-  alias projects='cd /Volumes/Projects'
-
-  # Enable quote of the day
-  # QUOTE="true";
-
-  if [ -d /Applications/MAMP ]; then
-    # Export PATH for MAMP
-    export PATH=/Applications/MAMP/Library/bin/:$PATH
-    export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
-    alias php='/Applications/MAMP/bin/php/php7.4.16/bin/php -c "/Library/Application Support/appsolute/MAMP PRO/conf/php7.4.16.ini"'
-    alias composer='/Applications/MAMP/bin/php/composer'
-    alias php-config='/Applications/MAMP/bin/php/php7.4.16/bin/php-config'
-    alias phpdbg='/Applications/MAMP/bin/php/php7.4.16/bin/phpdbg'
-    alias phpize='/Applications/MAMP/bin/php/php7.4.16/bin/phpize'
-    alias pear='/Applications/MAMP/bin/php/php7.4.16/bin/pear'
-    alias peardev='/Applications/MAMP/bin/php/php7.4.16/bin/peardev'
-    alias pecl='/Applications/MAMP/bin/php/php7.4.16/bin/pecl'
-  fi
-
-else
-  if [ -x /usr/bin/dircolors ]; then
-    alias ls="ls -lh --color"
-    alias dir='dir --color=auto'
-    alias vdir='vdir --color=auto'
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-  fi
-  # Get Distribution and Architecture
-  if [[ "$OS" == "Linux" ]]; then
-    Distribution=$(hostnamectl | grep 'Operating System' | awk '{ print $3 }')
-    Architecture=$(hostnamectl | grep 'Architecture' | awk '{ print $2 }')
-    if [[ "$(hostnamectl | grep 'Hardware Vendor' | awk '{ print $3 }')" == "QEMU" ]]; then
-      isVM=true
-    else
-      isVM=false
-    fi
-    # Functions
-    function install {
-      if [[ "$1" != '' ]]; then
-        pkg=$1
-      else
-        echo "Please select a software to install:"
-        echo " - UniFi_Controller"
-      fi
-      case $pkg in
-        UniFi_Controller)
-          echo "Installing UniFi Controller"
-          wget "https://github.com/LouisOuellet/UniFi/raw/master/install-unifi-pihole-English.sh" -O install-unifi-pihole.sh
-          chmod +x install-unifi-pihole.sh
-          ./install-unifi-pihole.sh no-pihole
-          rm install-unifi-pihole.sh
-          ;;
-        PiKVM_OLED)
-          rw
-          systemctl enable --now kvmd-oled kvmd-oled-reboot kvmd-oled-shutdown
-          systemctl enable --now kvmd-fan
-          ro
-          ;;
-        *)
-          echo "There is no installation script for $pkg"
-          ;;
-      esac
-    }
-    case $Distribution in
-      Arch)
-        if [ "$(whereis pacman | awk '{ print $2 }')" != '' ]; then
-          # Installing some packages
-          if [ "$(whereis toilet | awk '{ print $2 }')" == '' ]; then
-            sudo pacman -S -y toilet
-          fi
-          if [ "$(whereis cowsay | awk '{ print $2 }')" == '' ]; then
-            sudo pacman -S -y cowsay
-          fi
-          if [ "$(whereis linuxlogo | awk '{ print $2 }')" == '' ]; then
-            sudo pacman -S -y linuxlogo
-          fi
-          if [ "$(whereis figlet | awk '{ print $2 }')" == '' ]; then
-            sudo pacman -S -y figlet
-          fi
-          # One line update system
-          alias update="sudo pacman -Syu"
-        fi
-        ;;
-      Debian|Ubuntu)
-        if [[ "$Distribution" == "Ubuntu" ]]; then
-          # Adding aliases to enable/disable GUI Desktop
-          alias setCLI="sudo systemctl set-default multi-user && echo You need to reboot the system"
-          alias setGUI="sudo systemctl set-default graphical && echo You need to reboot the system"
-        fi
-        if [ "$(whereis apt-get | awk '{ print $2 }')" != '' ]; then
-          # Installing some packages
-          if [ "$(whereis toilet | awk '{ print $2 }')" == '' ]; then
-            sudo apt-get install -y toilet
-          fi
-          if [ "$(whereis cowsay | awk '{ print $2 }')" == '' ]; then
-            sudo apt-get install -y cowsay
-          fi
-          if [ "$(whereis linuxlogo | awk '{ print $2 }')" == '' ]; then
-            sudo apt-get install -y linuxlogo
-          fi
-          if [ "$(whereis figlet | awk '{ print $2 }')" == '' ]; then
-            sudo apt-get install -y figlet
-          fi
-          # One line update system
-          alias update="sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get dist-upgrade -y && sudo apt autoremove -y"
-          # One line upgrade system
-          alias upgrade="sudo apt install update-manager-core -y && sudo do-release-upgrade -y"
-          # One line check update
-          alias checkUpdate="sudo apt list --upgradable"
-        fi
-        ;;
-      *);;
-    esac
-  fi
 fi
 
-# Loading custom settings
-if [ -x ~/.profile ]; then
-  source ~/.profile
-fi
-if [ -x ~/.bash_aliases ]; then
-  source ~/.bash_aliases
-fi
+#==============================================================================
+# PROFILE
+#==============================================================================
 
-# Editing prompt
-# ┌ = \342\224\214
-# - = \342\224\200
-# └ = \342\224\224
-# ╼ = \342\225\274
+# SETS LOCALE to en_US
+export LC_ALL=en_US.UTF-8 > /dev/null 2>&1 || export LC_ALL=en_GB.UTF-8 > /dev/null 2>&1 || export LC_ALL=C.UTF-8 > /dev/null 2>&1
+
+# Configure Editor
+case $OS in
+  Linux)
+    export EDITOR=/usr/bin/nano
+    ;;
+  Mac)
+    export BASH_SILENCE_DEPRECATION_WARNING=1
+    export EDITOR=nano
+    export VISUAL="$EDITOR"
+    if [ -d /Applications/MAMP ]; then
+      # Export PATH for MAMP
+      export PATH=/Applications/MAMP/Library/bin/:$PATH
+      export PATH=/Applications/MAMP/bin/php/php7.4.16/bin:$PATH
+      alias php='/Applications/MAMP/bin/php/php7.4.16/bin/php -c "/Library/Application Support/appsolute/MAMP PRO/conf/php7.4.16.ini"'
+      alias composer='/Applications/MAMP/bin/php/composer'
+      alias php-config='/Applications/MAMP/bin/php/php7.4.16/bin/php-config'
+      alias phpdbg='/Applications/MAMP/bin/php/php7.4.16/bin/phpdbg'
+      alias phpize='/Applications/MAMP/bin/php/php7.4.16/bin/phpize'
+      alias pear='/Applications/MAMP/bin/php/php7.4.16/bin/pear'
+      alias peardev='/Applications/MAMP/bin/php/php7.4.16/bin/peardev'
+      alias pecl='/Applications/MAMP/bin/php/php7.4.16/bin/pecl'
+    fi
+    ;;
+  *);;
+esac
+
+# Enable color support
+if [ -x /usr/bin/dircolors ]; then
+  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+fi
+if [[ $- == *i* ]]; then format; else clrformat; fi
+
+# Enable elements
+elements
+
+#==============================================================================
+# Prompt
+#==============================================================================
 
 if [[ ${EUID} == 0 ]]; then
   pUSER="[${lightredText}\u${lightyellowText}@${lightblueText}\h${resetText}]"
 else
   pUSER="[${lightblueText}\u${lightgreenText}@${lightblueText}\h${resetText}]"
 fi
-pIP="[${redText}${IP1}${resetText}]"
+pIP="[${redText}${IP}${resetText}]"
 pCWD="[${lightcyanText}\w${resetText}]"
-pGIT='$(__git_ps1 "\342\224\200[${lightgreenText}%s${resetText}]")'
-PS1="\342\224\214\342\224\200${pUSER}\342\224\200${pIP}\342\224\200${pCWD}${pGIT}"
-PS1="${PS1}\n\342\224\224\342\224\200\342\224\200\342\225\274 $ "
+if [ "$(type -t __git_ps1)" = 'function' ]; then
+  pGIT='$(__git_ps1 "${frameHline}[${lightgreenText}%s${resetText}]")'
+else
+  pGIT=
+fi
+PS1="${frameTopLeft}${frameHline}${pUSER}${frameHline}${pIP}${frameHline}${pCWD}${pGIT}"
+PS1="${PS1}\n${frameBottomLeft}${frameHline}${frameHline}${frameHlineEnd} $ "
 
+#==============================================================================
 # Greetings
+#==============================================================================
+
 if [[ $- == *i* ]]; then
-  if [[ "$Distribution" == "Ubuntu" ]] || [[ "$Distribution" == "Debian" ]] || [[ "$OS" == "Mac" ]]; then
-    if [[ $EUID -ne 0 ]]; then
-      if [[ "$OS" == "Linux" ]]; then
-        linuxlogo -u -y -b
-      fi
-    else
+  if [[ "$PackageManager" != "" ]]; then
+    if [[ "$OS" == "Linux" ]]; then
+      linuxlogo -u -y -b
+    fi
+    if [[ ${EUID} == 0 ]]; then
       echo
       toilet -f smblock --filter border -w 120 ' Careful!   You are now root! '
     fi
@@ -542,9 +743,11 @@ if [[ $- == *i* ]]; then
   echo
   echo -ne "Good Morning, $USER! It's "; date '+%A, %B %-d %Y'
   echo
-  if [ "${QUOTE}" == "true" ]; then
-    # French Love Citation of the day
-    echo $(curl -s https://www.mon-poeme.fr/citation-amour-du-jour/ | grep '<div class="post">' | sed -e '1q;d' | sed -e 's/<[^>]*>//g')
-    echo
-  fi
 fi
+
+#==============================================================================
+# Loading custom settings
+#==============================================================================
+
+if [ -x ~/.profile ]; then source ~/.profile; fi
+if [ -x ~/.bash_aliases ]; then source ~/.bash_aliases; fi
