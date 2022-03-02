@@ -327,10 +327,33 @@ function import(){
 }
 
 #==============================================================================
+# SOURCING
+#==============================================================================
+
+case $OS in
+  Linux);;
+  Mac)
+    # Git Integration
+    if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash ]; then
+      source /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash
+    fi
+    if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh ]; then
+      source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
+    fi
+  	# Homebrew Integration
+  	eval "$(/opt/homebrew/bin/brew shellenv)"
+    # Adding homebrew
+    export PATH=/opt/homebrew/bin/:$PATH
+  	# iTerm2 Integration
+  	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+    ;;
+  *);;
+esac
+
+#==============================================================================
 # REQUIREMENTS
 #==============================================================================
 
-pkg bash
 pkg bash-completion
 pkg git
 pkg toilet
@@ -387,30 +410,6 @@ case $OS in
   Mac)
     alias ls="ls -lhG"
     alias projects='cd /Volumes/Projects'
-    ;;
-  *);;
-esac
-
-#==============================================================================
-# SOURCING
-#==============================================================================
-
-case $OS in
-  Linux);;
-  Mac)
-    # Git Integration
-    if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash ]; then
-      source /Library/Developer/CommandLineTools/usr/share/git-core/git-completion.bash
-    fi
-    if [ -f /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh ]; then
-      source /Library/Developer/CommandLineTools/usr/share/git-core/git-prompt.sh
-    fi
-  	# Homebrew Integration
-  	eval "$(/opt/homebrew/bin/brew shellenv)"
-    # Adding homebrew
-    export PATH=/opt/homebrew/bin/:$PATH
-  	# iTerm2 Integration
-  	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
     ;;
   *);;
 esac
