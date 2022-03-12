@@ -1,0 +1,14 @@
+{
+	"name": "quarantine-manager",
+	"version": "22.03-11",
+	"description": "Manage your quarantined emails using IMAP",
+	"license": "MIT",
+	"repository": "LouisOuellet/quarantine-manager",
+	"funding": "https://github.com/sponsors/LouisOuellet",
+	"author": {
+		"name": "Louis Ouellet",
+		"email": "louis_ouellet@hotmail.com",
+		"url": "https://laswitchtech.com"
+	}
+}
+
