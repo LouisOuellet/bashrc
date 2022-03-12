@@ -115,7 +115,7 @@ function clrformat(){
 }
 
 #==============================================================================
-# Elements
+# ELEMENTS
 #==============================================================================
 
 function elements(){
@@ -313,7 +313,6 @@ function import(){
     send_to=$(jq -r '.send.to' settings.json)
     logs_directory=$(jq -r '.logs.directory' settings.json)
   fi
-  blacklists=$(jq -r '.lists[]' list.json)
   case $OS in
     Linux)
       logs_file="${logs_directory}$(date +%s%N).log"
