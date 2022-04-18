@@ -661,6 +661,21 @@ if [[ "$OS" == "Mac" ]]; then
     php cli.php --publish
     cd $directory
   }
+
+  function trans {
+    if [[ ! -f "~/bin/trans" ]]; then
+      mkdir -p "~/bin/"
+      cd "~/bin/"
+      wget https://raw.githubusercontent.com/soimort/translate-shell/gh-pages/trans
+      chmod +x trans
+    fi
+    if [[ $1 != "" ]]; then
+      file=$1
+      for line in $(cat ${file}); do
+        bash ~/bin/trans "${line}"
+      done
+    fi
+  }
 fi
 
 #==============================================================================
