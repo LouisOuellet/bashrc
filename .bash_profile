@@ -52,7 +52,7 @@ case $OS in
 esac
 
 # Gathering Network
-if [ "$(whereis ifconfig | awk '{ print $1 }')" == '/sbin/ifconfig' ]; then
+if [[ "$(whereis ifconfig | awk '{ print $1 }')" == '/sbin/ifconfig' ]] || [[ "${OS}" == "Mac" ]]; then
   IP=$(ifconfig | grep "inet " | egrep -v 127.0.0.1 | awk '{ print $2 }' | tail -n 1)
 else
   IP=$(ip a | grep "inet " | egrep -v "127.0.0.1" | head -n 1 | awk '{ print $2 }')
@@ -663,17 +663,26 @@ if [[ "$OS" == "Mac" ]]; then
   }
 
   function trans {
-    if [[ ! -f "~/bin/trans" ]]; then
-      mkdir -p "~/bin/"
-      cd "~/bin/"
+    if [[ ! -f "/Users/${USER}/bin/trans" ]]; then
+      mkdir -p "/Users/${USER}/bin/"
+      cd "/Users/${USER}/bin/"
       wget https://raw.githubusercontent.com/soimort/translate-shell/gh-pages/trans
       chmod +x trans
     fi
     if [[ $1 != "" ]]; then
       file=$1
-      for line in $(cat ${file}); do
-        bash ~/bin/trans "${line}"
-      done
+      if [[ $2 != "" ]]; then
+        lang=$2
+      else
+        lang=en
+      fi
+      if [[ -f "${file}" ]]; then
+        for line in $(cat ${file}); do
+          bash /Users/${USER}/bin/trans -b :${lang} "${line}"
+        done
+      else
+        bash /Users/${USER}/bin/trans -b :${lang} "${file}"
+      fi
     fi
   }
 fi
